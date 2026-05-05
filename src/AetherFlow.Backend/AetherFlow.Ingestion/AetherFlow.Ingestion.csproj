@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <ItemGroup>
+    <PackageReference Include="Akka" />
+    <PackageReference Include="Akka.DependencyInjection" />
+    <PackageReference Include="Akka.Hosting" />
+    <PackageReference Include="Akka.Logger.Serilog" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Api" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Expressions" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AetherFlow.Infrastructure\AetherFlow.Infrastructure.csproj" />
+    <ProjectReference Include="..\AetherFlow.Shared\AetherFlow.Shared.csproj" />
+  </ItemGroup>
+</Project>

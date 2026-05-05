@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/infra/">
+    <Project Path="AetherFlow.Domain/AetherFlow.Domain.csproj" Id="ffc9b047-7f8e-4c89-954b-8ca77fa6d701" />
+    <Project Path="AetherFlow.Infrastructure/AetherFlow.Infrastructure.csproj" Id="e4d92cab-bb49-413f-a227-153da970dbeb" />
+    <Project Path="AetherFlow.Shared/AetherFlow.Shared.csproj" Id="d7120e9c-e44b-4dbb-ae19-54b57c58405d" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="AetherFlow.Ingestion/AetherFlow.Ingestion.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="AetherFlow.IngestionTests/AetherFlow.IngestionTests.csproj" Id="1d042246-a3ff-40e2-97b9-b3fb9635e12d" />
+  </Folder>
+</Solution>

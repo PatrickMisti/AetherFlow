@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\AetherFlow.Domain\AetherFlow.Domain.csproj" />
+  </ItemGroup>
+</Project>

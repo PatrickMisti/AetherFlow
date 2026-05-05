@@ -1,0 +1,17 @@
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Infrastructure.deps.json
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Infrastructure.dll
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Infrastructure.pdb
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Domain.dll
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Shared.dll
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Domain.pdb
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\bin\Debug\net10.0\AetherFlow.Shared.pdb
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.csproj.AssemblyReference.cache
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.AssemblyInfoInputs.cache
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.AssemblyInfo.cs
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.csproj.CoreCompileInputs.cache
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFl.133A6B3D.Up2Date
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.dll
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\refint\AetherFlow.Infrastructure.dll
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\AetherFlow.Infrastructure.pdb
+F:\Programming\Top-Tier\AetherFlow\src\AetherFlow.Backend\AetherFlow.Infrastructure\obj\Debug\net10.0\ref\AetherFlow.Infrastructure.dll

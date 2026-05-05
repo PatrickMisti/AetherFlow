@@ -1,0 +1,72 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "AetherFlow.Infrastructure/1.0.0": {
+        "dependencies": {
+          "AetherFlow.Domain": "1.0.0",
+          "AetherFlow.Shared": "1.0.0",
+          "Serilog": "4.3.2-dev-02419"
+        },
+        "runtime": {
+          "AetherFlow.Infrastructure.dll": {}
+        }
+      },
+      "Serilog/4.3.2-dev-02419": {
+        "runtime": {
+          "lib/net10.0/Serilog.dll": {
+            "assemblyVersion": "4.3.0.0",
+            "fileVersion": "4.3.0.0"
+          }
+        }
+      },
+      "AetherFlow.Domain/1.0.0": {
+        "runtime": {
+          "AetherFlow.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "AetherFlow.Shared/1.0.0": {
+        "dependencies": {
+          "AetherFlow.Domain": "1.0.0"
+        },
+        "runtime": {
+          "AetherFlow.Shared.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AetherFlow.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Serilog/4.3.2-dev-02419": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W8VlLVjPbjbkr4r88cr8FfkVzvaiguxFK8w2vczUMnSB74pK45g+SRjD5urq/x6gKvGICnv+NVvLP0Q89OdFQw==",
+      "path": "serilog/4.3.2-dev-02419",
+      "hashPath": "serilog.4.3.2-dev-02419.nupkg.sha512"
+    },
+    "AetherFlow.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AetherFlow.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

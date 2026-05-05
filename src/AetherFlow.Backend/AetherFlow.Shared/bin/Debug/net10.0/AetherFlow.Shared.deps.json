@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "AetherFlow.Shared/1.0.0": {
+        "dependencies": {
+          "AetherFlow.Domain": "1.0.0"
+        },
+        "runtime": {
+          "AetherFlow.Shared.dll": {}
+        }
+      },
+      "AetherFlow.Domain/1.0.0": {
+        "runtime": {
+          "AetherFlow.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AetherFlow.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AetherFlow.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

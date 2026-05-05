@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "i27waC8xwXQ=",
+  "success": true,
+  "projectFilePath": "F:\\Programming\\Top-Tier\\AetherFlow\\src\\AetherFlow.Backend\\AetherFlow.Infrastructure\\AetherFlow.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Patrick\\.nuget\\packages\\serilog\\4.3.2-dev-02419\\serilog.4.3.2-dev-02419.nupkg.sha512"
+  ],
+  "logs": []
+}

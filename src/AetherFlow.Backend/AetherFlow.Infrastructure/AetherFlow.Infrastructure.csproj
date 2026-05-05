@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Serilog" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AetherFlow.Domain\AetherFlow.Domain.csproj" />
+    <ProjectReference Include="..\AetherFlow.Shared\AetherFlow.Shared.csproj" />
+  </ItemGroup>
+</Project>
