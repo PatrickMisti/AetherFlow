@@ -1,15 +1,16 @@
-﻿using AetherFlow.Domain.Domains;
-using AetherFlow.Ingestion.Exceptions;
+﻿using AetherFlow.Ingestion.Exceptions;
 using AetherFlow.Shared.Messages.Ingestion;
 using Akka.Actor;
 using Akka.DependencyInjection;
 using Akka.Event;
+using Akka.Hosting;
 
 namespace AetherFlow.Ingestion.Actors;
 
 public class AetherSupervisor : ReceiveActor, IWithTimers
 {
     private readonly ILoggingAdapter _log = Context.GetLogger();
+    private readonly IActorRef _pipelineRef;
 
     public ITimerScheduler? Timers { get; set; }
     private IReadOnlyList<IActorRef> _workers = [];
@@ -19,8 +20,10 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
     private readonly int _readingPerChunk;
     private readonly TimeSpan _tickMs;
 
-    public AetherSupervisor(int workers = 4, int readingsPerChunk = 10, int ticksMs = 2000)
+    public AetherSupervisor(IRequiredActor<AetherPipelineActor> pipeline, int workers = 4, int readingsPerChunk = 10,
+        int ticksMs = 2000)
     {
+        _pipelineRef = pipeline.ActorRef;
         _workerCount = workers;
         _readingPerChunk = readingsPerChunk;
         _tickMs = TimeSpan.FromMilliseconds(ticksMs);
@@ -36,7 +39,7 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
             key: "AetherSupervisorTick",
             msg: new DispatchWork(),
             interval: _tickMs
-            );
+        );
     }
 
     private void HandleDispatchWork()
@@ -53,7 +56,7 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
     private void OnChunkCompleted(GeneratedChunk msg)
     {
         var chunk = msg.Chunks;
-        _log.Info("Received completed chunk {ChunkIndex} with {ReadingCount} readings",
+        _log.Debug("Received completed chunk {ChunkIndex} with {ReadingCount} readings",
             msg.Index, chunk.Count());
 
         var dict = chunk
@@ -61,7 +64,7 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
             .ToDictionary(g => g.Key, g => g.Count());
 
         foreach (var kvp in dict)
-            _log.Info("\t{ChargeState}: {Count} readings", kvp.Key, kvp.Value);
+            _log.Debug("\t{ChargeState}: {Count} readings", kvp.Key, kvp.Value);
     }
 
     protected override void PreStart()
@@ -80,6 +83,27 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
                 return worker;
             })
             .ToList();
+
+        _log.Info("Send message to start pipeline");
+        _pipelineRef.Tell(StartPipelineMessage.Instance);
+    }
+
+    protected override void PostStop()
+    {
+        _log.Info("══════════════════════════════════════════════");
+        _log.Info("  AETHER NETWORK SUPERVISOR  —  SHUTTING DOWN");
+        _log.Info("══════════════════════════════════════════════");
+
+        _log.Info("Spawning {WorkerCount} worker nodes...", _workerCount);
+        foreach (var worker in _workers)
+        {
+            _log.Debug("Stopping worker: {WorkerPath}", worker.Path);
+            Context.Stop(worker);
+        }
+
+        _log.Info("Send message to stop pipeline");
+        _pipelineRef.Tell(new StopPipelineMessage());
+        base.PostStop();
     }
 
     protected override SupervisorStrategy SupervisorStrategy()

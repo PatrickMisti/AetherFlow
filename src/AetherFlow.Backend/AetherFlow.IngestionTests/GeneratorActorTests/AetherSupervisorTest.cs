@@ -1,26 +1,35 @@
-﻿using AetherFlow.Shared.Messages.Ingestion;
-using Akka.Actor;
-using Akka.TestKit.NUnit;
-using AetherFlow.Domain.Domains;
+﻿using AetherFlow.Domain.Domains;
 using AetherFlow.Ingestion.Actors;
+using AetherFlow.Shared.Messages.Ingestion;
+using Akka.Actor;
+using Akka.Hosting;
+using Akka.TestKit.NUnit;
+using Moq;
 
 namespace AetherFlow.IngestionTests.GeneratorActorTests;
 
 [TestFixture]
 public class AetherSupervisorTest : TestKit
 {
+    private Mock<IRequiredActor<AetherPipelineActor>> _mockPipeline = null!;
+
+    [SetUp]
+    public void SetUp()
+    {
+        var pipelineProbe = CreateTestProbe();
+        _mockPipeline = new Mock<IRequiredActor<AetherPipelineActor>>();
+        _mockPipeline.Setup(p => p.ActorRef).Returns(pipelineProbe.Ref);
+    }
+
     [Test]
     public void AetherSupervisor_ShouldSpawnCorrectNumberOfWorkers()
     {
         // Arrange
         const int workerCount = 4;
-        var supervisorProps = Props.Create(() => new AetherSupervisor(workers: workerCount));
-
-        // Act
+        var supervisorProps = Props.Create(() => new AetherSupervisor(_mockPipeline.Object, workers: workerCount));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-spawn-test");
 
-        // Assert
-        // Verify supervisor is created successfully
+        // Assert: Actor created without exception
         Assert.NotNull(supervisor);
     }
 
@@ -28,13 +37,14 @@ public class AetherSupervisorTest : TestKit
     public void AetherSupervisor_ShouldStartTimerOnStartGeneratorMessage()
     {
         // Arrange
-        var supervisorProps = Props.Create(() => new AetherSupervisor(workers: 2, readingsPerChunk: 5, ticksMs: 1000));
+        var supervisorProps = Props.Create(() =>
+            new AetherSupervisor(_mockPipeline.Object, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-timer-test");
 
         // Act
         supervisor.Tell(new StartGenerator());
 
-        // Assert - Timer should be started without throwing
+        // Assert: Timer started without exception
         Assert.NotNull(supervisor);
     }
 
@@ -46,18 +56,19 @@ public class AetherSupervisorTest : TestKit
         const int readingsPerChunk = 10;
 
         var supervisorProps = Props.Create(() =>
-            new AetherSupervisor(workers: workerCount, readingsPerChunk: readingsPerChunk, ticksMs: 5000));
+            new AetherSupervisor(_mockPipeline.Object, workers: workerCount, readingsPerChunk: readingsPerChunk, ticksMs: 5000));
+
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-dispatch-test");
 
         // Act
         supervisor.Tell(new DispatchWork());
 
-        // Assert - Should dispatch without throwing
+        // Assert: Should dispatch without throwing
         Assert.NotNull(supervisor);
     }
 
     [Test]
-    public void AetherSupervisor_ShouldLogChunkCompletionWithChargeStateCounts()
+    public void AetherSupervisor_ShouldProcessChunkCompletionMessage()
     {
         // Arrange
         var chunks = new List<AetherChunk>
@@ -69,13 +80,14 @@ public class AetherSupervisorTest : TestKit
             new(ChargeState: AetherChargeState.Fading, ChargePercent: 25),
         };
 
-        var supervisorProps = Props.Create(() => new AetherSupervisor(workers: 2, readingsPerChunk: 5, ticksMs: 1000));
+        var supervisorProps = Props.Create(() =>
+            new AetherSupervisor(_mockPipeline.Object, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-chunk-test");
 
-        // Act
+        // Act: Send chunk completion
         supervisor.Tell(new GeneratedChunk(Index: 0, Chunks: chunks));
 
-        // Assert - Should process chunk without throwing
+        // Assert: Should process chunk without throwing
         Assert.NotNull(supervisor);
     }
 
@@ -84,20 +96,21 @@ public class AetherSupervisorTest : TestKit
     {
         // Arrange
         const int workerCount = 2;
-        var supervisorProps = Props.Create(() => new AetherSupervisor(workers: workerCount, readingsPerChunk: 5, ticksMs: 1000));
+        var supervisorProps = Props.Create(() =>
+            new AetherSupervisor(_mockPipeline.Object, workers: workerCount, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-index-test");
 
-        // Act
+        // Act: Multiple dispatches
         supervisor.Tell(new DispatchWork());
         supervisor.Tell(new DispatchWork());
         supervisor.Tell(new DispatchWork());
 
-        // Assert - Multiple dispatches should work without throwing
+        // Assert: Should process multiple dispatches without exception
         Assert.NotNull(supervisor);
     }
 
     [Test]
-    public void AetherSupervisor_ShouldGroupChunksByChargeStateCorrectly()
+    public void ChunkGrouping_ShouldGroupByChargeStateCorrectly()
     {
         // Arrange
         var chunks = new List<AetherChunk>
@@ -123,33 +136,18 @@ public class AetherSupervisorTest : TestKit
     }
 
     [Test]
-    public void AetherSupervisor_ShouldInitializeWithCorrectParameters()
-    {
-        // Arrange
-        const int workers = 5;
-        const int readingsPerChunk = 20;
-        const int ticksMs = 3000;
-
-        // Act
-        var supervisorProps = Props.Create(() => new AetherSupervisor(workers: workers, readingsPerChunk: readingsPerChunk, ticksMs: ticksMs));
-        var supervisor = Sys.ActorOf(supervisorProps, "supervisor-params-test");
-
-        // Assert
-        Assert.NotNull(supervisor);
-    }
-
-    [Test]
     public void AetherSupervisor_ShouldHandleEmptyChunksList()
     {
         // Arrange
         var emptyChunks = new List<AetherChunk>();
-        var supervisorProps = Props.Create(() => new AetherSupervisor(workers: 2, readingsPerChunk: 5, ticksMs: 1000));
+        var supervisorProps = Props.Create(() => 
+            new AetherSupervisor(_mockPipeline.Object, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-empty-test");
 
         // Act
         supervisor.Tell(new GeneratedChunk(Index: 0, Chunks: emptyChunks));
 
-        // Assert - Should handle empty list gracefully
+        // Assert: Should handle empty list gracefully
         Assert.NotNull(supervisor);
     }
 }

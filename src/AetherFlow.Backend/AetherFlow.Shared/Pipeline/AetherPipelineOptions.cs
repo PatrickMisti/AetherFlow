@@ -1,4 +1,4 @@
-﻿namespace AetherFlow.Infrastructure.AetherDataFlow;
+﻿namespace AetherFlow.Shared.Pipeline;
 
 public sealed class AetherPipelineOptions
 {

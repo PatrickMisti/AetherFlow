@@ -18,7 +18,7 @@ internal static class ServiceBuildConfig
 
     extension(IServiceCollection services)
     {
-        public IServiceCollection BuildAkka(string actorSystemName)
+        private IServiceCollection BuildAkka(string actorSystemName)
         {
             services.AddAkka(actorSystemName, config =>
             {
@@ -40,9 +40,11 @@ internal static class ServiceBuildConfig
                 // registry to find actor + di to inject actor or class
                 config.WithActors((system, registry, di) =>
                 {
+                    var pipActor = system.ActorOf(di.Props<AetherPipelineActor>());
                     var genSupervisor = system.ActorOf(di.Props<AetherSupervisor>());
 
                     registry.Register<AetherSupervisor>(genSupervisor);
+                    registry.Register<AetherPipelineActor>(pipActor);
 
                     genSupervisor.Tell(new StartGenerator());
                 });
@@ -54,8 +56,6 @@ internal static class ServiceBuildConfig
         private IServiceCollection AddServices()
         {
             services.AddScoped<IPeripheryConnector<AetherChunk>, AetherGeneratorSensor>();
-            // Add Pipeline
-            services.AddSingleton<IAetherPipeline, AetherPipeline>();
             return services;
         }
     }
@@ -86,7 +86,8 @@ internal static class ServiceBuildConfig
             builder.Services.AddServices();
             return builder;
         }
-        public string GetActorSystemName()
+
+        private string GetActorSystemName()
         {
             return builder.Configuration["Akka:ActorSystem"] ?? AkkaSystemName;
         }

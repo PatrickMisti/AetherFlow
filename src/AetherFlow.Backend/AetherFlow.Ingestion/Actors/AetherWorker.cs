@@ -4,26 +4,29 @@ using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
 using Akka.Actor;
 using Akka.Event;
+using Akka.Hosting;
 
 namespace AetherFlow.Ingestion.Actors;
 
 public class AetherWorker : ReceiveActor
 {
+    private readonly IActorRef _pipelineActor;
     private readonly ILoggingAdapter _log = Context.GetLogger();
 
     private readonly IPeripheryConnector<AetherChunk>? _connector;
     private readonly string _workerId;
     private readonly Random _random;
 
-    public AetherWorker(string workerId, IServiceScopeFactory scope, Random? random = null)
+    public AetherWorker(IRequiredActor<AetherPipelineActor> pipeline, string workerId, IServiceScopeFactory scope, Random? random = null)
     {
+        _pipelineActor = pipeline.ActorRef;
         _workerId = workerId;
         _random = random ?? Random.Shared;
 
         //var provider = PeripheryProvider.GetProvider();
         _connector = scope.CreateScope().ServiceProvider.GetService<IPeripheryConnector<AetherChunk>>();
 
-        Receive<GenerateChunk>(HandleGenerateChunk);
+        ReceiveAsync<GenerateChunk>(HandleGenerateChunk);
         Receive<StopWorker>(_ =>
         {
             _log.Info("Worker {WorkerId} received StopWorker message.", _workerId);
@@ -31,8 +34,11 @@ public class AetherWorker : ReceiveActor
         });
     }
 
-    private void HandleGenerateChunk(GenerateChunk chunk)
+    private async Task HandleGenerateChunk(GenerateChunk chunk)
     {
+        // Capture the sender while we're in the actor context so we can reply after awaits
+        var replyTo = Sender;
+
         _log.Debug("Worker {WorkerId} received GenerateChunk message with ReadingsPerChunk: {ReadingsPerChunk} and Index: {Index}", _workerId, chunk.ReadingsPerChunk, chunk.Index);
 
         if (_connector == null)
@@ -47,12 +53,23 @@ public class AetherWorker : ReceiveActor
             throw new AetherSimulationException("Simulated failure.");
         }
 
-        Task.Delay(_random.Next(100, 500)).Wait(); // Simulate variable processing time
+        // Avoid blocking the actor thread
+        await Task.Delay(_random.Next(100, 500)); // Simulate variable processing time
 #endif
-        var genChunk = Enumerable.Range(0, chunk.ReadingsPerChunk).AsParallel().Select(_ => _connector.GenerateData());
 
+        // Materialize the generated chunk once (avoid multiple enumeration and potential side-effects)
+        var generatedList = Enumerable.Range(0, chunk.ReadingsPerChunk)
+            .Select(_ => _connector.GenerateData())
+            .ToList();
 
-        Sender.Tell(new GeneratedChunk(chunk.Index, genChunk.ToList()));
+        // Ask the pipeline for status. Do NOT use ConfigureAwait(false) here - continuation must run on actor dispatcher
+        var isRunning = await _pipelineActor.Ask<PipelineStatusResponse>(PipelineStatusRequest.Instance, TimeSpan.FromMilliseconds(100));
+
+        if (isRunning.IsRunning)
+            _pipelineActor.Tell(new OfferChunksMessage(generatedList.ToArray()));
+
+        // Reply to original sender
+        replyTo.Tell(new GeneratedChunk(chunk.Index, generatedList));
     }
 
     protected override void PreStart()

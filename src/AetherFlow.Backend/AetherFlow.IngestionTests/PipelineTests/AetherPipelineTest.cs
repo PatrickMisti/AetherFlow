@@ -1,8 +1,8 @@
 using AetherFlow.Domain.Domains;
 using AetherFlow.Infrastructure.AetherDataFlow;
 using AetherFlow.Shared.Pipeline;
+using Akka.Event;
 using Moq;
-using Serilog;
 using System.Reflection;
 using System.Threading.Tasks.Dataflow;
 
@@ -20,22 +20,19 @@ public class AetherPipelineTest
     [SetUp]
     public void SetUp()
     {
-        var logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .CreateLogger();
+        var mockLogger = new Mock<ILoggingAdapter>();
 
         _mockAction = new Mock<IAetherChunkPipelineAction>();
         _mockAction.Setup(a => a.ProcessNotification(It.IsAny<AetherChunk>()))
             .Returns<AetherChunk>(c => c);
 
-        _pipeline = new AetherPipeline(logger);
+        _pipeline = new AetherPipeline(mockLogger.Object);
     }
 
     [TearDown]
-    public void TearDown()
+    public async Task TearDown()
     {
-        _pipeline.Stop();
+        await _pipeline.StopAsync();
     }
 
     // Returns a task that completes after Sink has been called `count` times.
@@ -91,17 +88,17 @@ public class AetherPipelineTest
     }
 
     [Test]
-    public void Stop_SetsIsRunningToFalse()
+    public async Task Stop_SetsIsRunningToFalse()
     {
         _pipeline.Start(_mockAction.Object, null);
-        _pipeline.Stop();
+        await _pipeline.StopAsync();
         Assert.That(_pipeline.IsRunning(), Is.False);
     }
 
     [Test]
     public void Stop_WhenNotRunning_DoesNotThrow()
     {
-        Assert.DoesNotThrow(() => _pipeline.Stop());
+        Assert.DoesNotThrowAsync(async () => await _pipeline.StopAsync());
     }
 
     [Test]
@@ -161,6 +158,8 @@ public class AetherPipelineTest
 
         _mockAction.Verify(a => a.ProcessNotification(chunk), Times.Once);
         _mockAction.Verify(a => a.Sink(It.IsNotNull<AetherChunk?>()), Times.Once);
+
+        await _pipeline.StopAsync();
     }
 
     [Test]
