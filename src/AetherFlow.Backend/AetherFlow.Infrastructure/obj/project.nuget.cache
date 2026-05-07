@@ -1,10 +1,58 @@
 {
   "version": 2,
-  "dgSpecHash": "i27waC8xwXQ=",
+  "dgSpecHash": "mwr2m+Qrgdw=",
   "success": true,
   "projectFilePath": "F:\\Programming\\Top-Tier\\AetherFlow\\src\\AetherFlow.Backend\\AetherFlow.Infrastructure\\AetherFlow.Infrastructure.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Patrick\\.nuget\\packages\\serilog\\4.3.2-dev-02419\\serilog.4.3.2-dev-02419.nupkg.sha512"
+    "C:\\Users\\Patrick\\.nuget\\packages\\akka\\1.5.67\\akka.1.5.67.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\akka.analyzers\\0.3.3\\akka.analyzers.0.3.3.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\akka.dependencyinjection\\1.5.67\\akka.dependencyinjection.1.5.67.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\akka.hosting\\1.5.67\\akka.hosting.1.5.67.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\akka.logger.serilog\\1.5.67\\akka.logger.serilog.1.5.67.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\akka.streams\\1.5.67\\akka.streams.1.5.67.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\google.protobuf\\3.26.1\\google.protobuf.3.26.1.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.configuration\\8.0.0\\microsoft.extensions.configuration.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.configuration.binder\\8.0.0\\microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.0\\microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.diagnostics.abstractions\\8.0.0\\microsoft.extensions.diagnostics.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.diagnostics.healthchecks\\8.0.0\\microsoft.extensions.diagnostics.healthchecks.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.diagnostics.healthchecks.abstractions\\8.0.0\\microsoft.extensions.diagnostics.healthchecks.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\8.0.0\\microsoft.extensions.fileproviders.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\8.0.0\\microsoft.extensions.hosting.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.logging\\8.0.0\\microsoft.extensions.logging.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.logging.configuration\\8.0.0\\microsoft.extensions.logging.configuration.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.objectpool\\6.0.36\\microsoft.extensions.objectpool.6.0.36.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\8.0.0\\microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\opentelemetry\\1.9.0\\opentelemetry.1.9.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\opentelemetry.api\\1.9.0\\opentelemetry.api.1.9.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\opentelemetry.api.providerbuilderextensions\\1.9.0\\opentelemetry.api.providerbuilderextensions.1.9.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\reactive.streams\\1.0.4\\reactive.streams.1.0.4.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\serilog\\4.3.2-dev-02419\\serilog.4.3.2-dev-02419.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\system.configuration.configurationmanager\\6.0.1\\system.configuration.configurationmanager.6.0.1.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\system.security.cryptography.protecteddata\\6.0.0\\system.security.cryptography.protecteddata.6.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\system.security.permissions\\6.0.0\\system.security.permissions.6.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'OpenTelemetry.Api' 1.9.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-g94r-2vxg-569j",
+      "projectPath": "F:\\Programming\\Top-Tier\\AetherFlow\\src\\AetherFlow.Backend\\AetherFlow.Infrastructure\\AetherFlow.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\Programming\\Top-Tier\\AetherFlow\\src\\AetherFlow.Backend\\AetherFlow.Infrastructure\\AetherFlow.Infrastructure.csproj",
+      "libraryId": "OpenTelemetry.Api",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }
