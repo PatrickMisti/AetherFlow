@@ -41,9 +41,9 @@ internal static class ServiceBuildConfig
                 config.WithActors((system, registry, di) =>
                 {
                     var pipActor = system.ActorOf(di.Props<AetherPipelineActor>());
-                    var genSupervisor = system.ActorOf(di.Props<AetherSupervisor>());
+                    var genSupervisor = system.ActorOf(di.Props<AetherSupervisorActor>());
 
-                    registry.Register<AetherSupervisor>(genSupervisor);
+                    registry.Register<AetherSupervisorActor>(genSupervisor);
                     registry.Register<AetherPipelineActor>(pipActor);
 
                     genSupervisor.Tell(new StartGenerator());

@@ -8,7 +8,7 @@ using Akka.Hosting;
 
 namespace AetherFlow.Ingestion.Actors;
 
-public class AetherWorker : ReceiveActor
+public class AetherWorkerActor : ReceiveActor
 {
     private readonly IActorRef _pipelineActor;
     private readonly ILoggingAdapter _log = Context.GetLogger();
@@ -17,7 +17,7 @@ public class AetherWorker : ReceiveActor
     private readonly string _workerId;
     private readonly Random _random;
 
-    public AetherWorker(IRequiredActor<AetherPipelineActor> pipeline, string workerId, IServiceScopeFactory scope, Random? random = null)
+    public AetherWorkerActor(IRequiredActor<AetherPipelineActor> pipeline, string workerId, IServiceScopeFactory scope, Random? random = null)
     {
         _pipelineActor = pipeline.ActorRef;
         _workerId = workerId;

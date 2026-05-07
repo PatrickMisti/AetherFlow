@@ -43,7 +43,7 @@ public class AetherWorkerTest : TestKit
             .BuildServiceProvider();
 
         _workerActor = Sys.ActorOf(
-            Props.Create(() => new AetherWorker(
+            Props.Create(() => new AetherWorkerActor(
                 mockRequiredActor.Object,
                 "test-worker-1",
                 sp.GetRequiredService<IServiceScopeFactory>(),

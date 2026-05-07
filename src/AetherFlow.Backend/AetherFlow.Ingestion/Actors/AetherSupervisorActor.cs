@@ -7,7 +7,7 @@ using Akka.Hosting;
 
 namespace AetherFlow.Ingestion.Actors;
 
-public class AetherSupervisor : ReceiveActor, IWithTimers
+public class AetherSupervisorActor : ReceiveActor, IWithTimers
 {
     private readonly ILoggingAdapter _log = Context.GetLogger();
     private readonly IActorRef _pipelineRef;
@@ -20,7 +20,7 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
     private readonly int _readingPerChunk;
     private readonly TimeSpan _tickMs;
 
-    public AetherSupervisor(IRequiredActor<AetherPipelineActor> pipeline, int workers = 4, int readingsPerChunk = 10,
+    public AetherSupervisorActor(IRequiredActor<AetherPipelineActor> pipeline, int workers = 4, int readingsPerChunk = 10,
         int ticksMs = 2000)
     {
         _pipelineRef = pipeline.ActorRef;
@@ -78,7 +78,7 @@ public class AetherSupervisor : ReceiveActor, IWithTimers
             .Range(0, _workerCount).Select(i =>
             {
                 var worker =
-                    Context.ActorOf(DependencyResolver.For(Context.System).Props<AetherWorker>($"aether-worker-{i}"));
+                    Context.ActorOf(DependencyResolver.For(Context.System).Props<AetherWorkerActor>($"aether-worker-{i}"));
                 _log.Debug("Spawned worker: {WorkerPath}", worker.Path);
                 return worker;
             })
