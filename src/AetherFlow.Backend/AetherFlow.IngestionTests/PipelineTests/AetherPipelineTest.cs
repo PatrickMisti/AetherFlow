@@ -1,8 +1,8 @@
 using AetherFlow.Domain.Domains;
 using AetherFlow.Infrastructure.AetherDataFlow;
 using AetherFlow.Shared.Pipeline;
-using Akka.Event;
 using Moq;
+using Serilog;
 using System.Reflection;
 using System.Threading.Tasks.Dataflow;
 
@@ -20,7 +20,7 @@ public class AetherPipelineTest
     [SetUp]
     public void SetUp()
     {
-        var mockLogger = new Mock<ILoggingAdapter>();
+        var mockLogger = new Mock<ILogger>();
 
         _mockAction = new Mock<IAetherChunkPipelineAction>();
         _mockAction.Setup(a => a.ProcessNotification(It.IsAny<AetherChunk>()))

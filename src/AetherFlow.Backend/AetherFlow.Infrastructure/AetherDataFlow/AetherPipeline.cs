@@ -3,11 +3,11 @@ using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Pipeline;
 using System.Threading.Tasks.Dataflow;
 using AetherFlow.Infrastructure.Utils;
-using Akka.Event;
+using Serilog;
 
 namespace AetherFlow.Infrastructure.AetherDataFlow;
 
-public class AetherPipeline(ILoggingAdapter logger) : IAetherPipeline
+public class AetherPipeline(ILogger logger) : IAetherPipeline
 {
     private BufferBlock<AetherChunk>? _pipeline;
     private bool _isRunning;
@@ -29,7 +29,7 @@ public class AetherPipeline(ILoggingAdapter logger) : IAetherPipeline
                     BoundedCapacity = opts.BoundedCapacity
                 };
 
-                logger.Info(
+                logger.Information(
                     "AetherPipeline starting — Capacity={Capacity}, AlertStaleMs={AlertMs}, NormalStaleMs={NormalMs}",
                     opts.BoundedCapacity, opts.AlertStaleMs, opts.NormalStaleMs);
 
@@ -86,7 +86,7 @@ public class AetherPipeline(ILoggingAdapter logger) : IAetherPipeline
                 _completion = Task.WhenAll(consumeAlert.Completion, consumeNormal.Completion);
 
                 _isRunning = true;
-                logger.Info("AetherPipeline started");
+                logger.Information("AetherPipeline started");
             }
             catch (Exception e)
             {
@@ -103,14 +103,14 @@ public class AetherPipeline(ILoggingAdapter logger) : IAetherPipeline
         {
             if (!IsRunning()) return;
 
-            logger.Info("AetherPipeline stopping");
+            logger.Information("AetherPipeline stopping");
             _pipeline?.Complete();
             _pipeline = null;
             _isRunning = false;
         }
 
         await _completion.ConfigureAwait(false);
-        logger.Info("AetherPipeline stopped");
+        logger.Information("AetherPipeline stopped");
     }
 
     public Task OfferAsync(params AetherChunk[] chunks)

@@ -4,6 +4,7 @@ using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
 using Akka.Actor;
 using Akka.Event;
+using Serilog;
 
 namespace AetherFlow.Ingestion.Actors;
 
@@ -14,7 +15,7 @@ public sealed class AetherPipelineActor : ReceiveActor
 
     public AetherPipelineActor()
     {
-        _pipeline = new AetherPipeline(_log);
+        _pipeline = new AetherPipeline(Log.ForContext<AetherPipelineActor>());
 
         Receive<StartPipelineMessage>(_ => HandleStartPipeline());
         ReceiveAsync<OfferChunksMessage>(HandleOfferAsync);
