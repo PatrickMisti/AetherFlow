@@ -1,13 +1,13 @@
 ﻿using AetherFlow.Domain.Domains;
-using AetherFlow.Infrastructure.AetherDataFlow;
 using AetherFlow.Infrastructure.AetherGenerator;
 using AetherFlow.Ingestion.Actors;
 using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
-using AetherFlow.Shared.Pipeline;
 using Akka.Actor;
+using Akka.Cluster.Hosting;
 using Akka.Hosting;
 using Akka.Logger.Serilog;
+using Akka.Remote.Hosting;
 using Serilog;
 
 namespace AetherFlow.Ingestion.ApplicationBuilderConfig;
@@ -27,6 +27,18 @@ internal static class ServiceBuildConfig
                 {
                     opt.ClearLoggers();
                     opt.AddSerilogLogging();
+                });
+                
+                config.WithRemoting(opt =>
+                {
+                    opt.HostName = "localhost";
+                    opt.Port = 9091;
+                });
+
+                config.WithClustering(new()
+                {
+                    Roles = ["aether-ingestion"],
+                    SeedNodes = ["akka.tcp://AetherFlow@localhost:9090"]
                 });
 
                 // system -> actor-system

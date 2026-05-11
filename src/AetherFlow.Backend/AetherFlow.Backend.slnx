@@ -5,6 +5,7 @@
     <Project Path="AetherFlow.Shared/AetherFlow.Shared.csproj" Id="d7120e9c-e44b-4dbb-ae19-54b57c58405d" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="AetherFlow.Engine/AetherFlow.Engine.csproj" />
     <Project Path="AetherFlow.Ingestion/AetherFlow.Ingestion.csproj" />
   </Folder>
   <Folder Name="/test/">
