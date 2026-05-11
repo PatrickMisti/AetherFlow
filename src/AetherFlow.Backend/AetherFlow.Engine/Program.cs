@@ -1,3 +1,4 @@
+using AetherFlow.Engine;
 using AetherFlow.Engine.Actors;
 using AetherFlow.Shared.AetherInterfaces;
 using Akka.Actor;
@@ -8,9 +9,7 @@ using Akka.Logger.Serilog;
 using Akka.Remote.Hosting;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// var builder = Host.CreateApplicationBuilder(args);
+var builder = Host.CreateApplicationBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -46,11 +45,12 @@ builder.Services.AddAkka(akkaActorSystemName, config =>
             var props = Props.Create(() => new AetherEngineActor(entityId));
             return props;
         },
-        messageExtractor: HashCodeMessageExtractor.Create(maxNumberOfShards: 100,
+        messageExtractor: CustomMessageExtractor.Create(),
+        /*HashCodeMessageExtractor.Create(maxNumberOfShards: 100,
             entityIdExtractor: msg => msg switch
             {
                 _ => null
-            }),
+            }),*/
         new()
         {
             StateStoreMode = StateStoreMode.DData,
@@ -61,16 +61,6 @@ builder.Services.AddAkka(akkaActorSystemName, config =>
 });
 
 var host = builder.Build();
-
-
-host.MapGet("/", (IRequiredActor<IAetherShardMarker> shardRegion) =>
-{
-    var s = new Test("Hello from the web endpoint!");
-    // Example of sending a message to the shard region
-    shardRegion.ActorRef.Tell(new ShardingEnvelope("hallo", s));
-    return "Message sent to Aether Engine!";
-});
-
-host.Run("http://localhost:3000");
+host.Run();
 
 public record Test(string Message);
