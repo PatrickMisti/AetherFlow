@@ -1,6 +1,6 @@
 ﻿using Akka.Cluster.Sharding;
 
-namespace AetherFlow.Engine;
+namespace AetherFlow.Infrastructure.AetherShardRegion;
 
 public sealed class CustomMessageExtractor : HashCodeMessageExtractor
 {

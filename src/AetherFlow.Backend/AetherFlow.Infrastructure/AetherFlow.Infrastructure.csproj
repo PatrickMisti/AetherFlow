@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Akka.Cluster.Sharding" />
     <PackageReference Include="Akka.Logger.Serilog" />
     <PackageReference Include="Serilog" />
   </ItemGroup>

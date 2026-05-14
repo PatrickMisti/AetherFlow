@@ -1,5 +1,7 @@
+using AetherFlow.Backend.ServiceDefaults;
 using AetherFlow.Engine;
 using AetherFlow.Engine.Actors;
+using AetherFlow.Infrastructure.AetherShardRegion;
 using AetherFlow.Shared.AetherInterfaces;
 using Akka.Actor;
 using Akka.Cluster.Hosting;
@@ -7,17 +9,12 @@ using Akka.Cluster.Sharding;
 using Akka.Hosting;
 using Akka.Logger.Serilog;
 using Akka.Remote.Hosting;
-using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
-builder.Logging.ClearProviders();
+builder.AddServiceDefaults();
 
-var akkaActorSystemName = builder.Configuration["Akka:ActorSystemName"] ?? "AetherFlowIngestion";
-
+var akkaActorSystemName = builder.Configuration["Akka:ActorSystemName"] ?? throw new InvalidOperationException("Akka Actor System Name is not configured.");
 
 builder.Services.AddAkka(akkaActorSystemName, config =>
 {
@@ -60,7 +57,10 @@ builder.Services.AddAkka(akkaActorSystemName, config =>
         });
 });
 
+
+builder.Services.AddHostedService<Worker>();
+
+
+
 var host = builder.Build();
 host.Run();
-
-public record Test(string Message);

@@ -6,11 +6,13 @@
   <ItemGroup>
     <PackageVersion Include="Akka" Version="1.5.67" />
     <PackageVersion Include="Akka.Cluster.Hosting" Version="1.5.67" />
+    <PackageVersion Include="Akka.Cluster.Sharding" Version="1.5.67" />
     <PackageVersion Include="Akka.DependencyInjection" Version="1.5.67" />
     <PackageVersion Include="Akka.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.Logger.Serilog" Version="1.5.67" />
     <PackageVersion Include="Akka.Remote.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.TestKit.NUnit" Version="1.5.67" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.3.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="11.0.0-preview.3.26207.106" />
@@ -21,9 +23,21 @@
     <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.15.3" />
     <PackageVersion Include="Serilog" Version="4.3.2-dev-02419" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageVersion Include="Serilog.Expressions" Version="5.1.0-dev-02309" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1-dev-02339" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <!-- Aspire -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.5.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
+    <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.1-nblumhardt-02317" />
   </ItemGroup>
 </Project>

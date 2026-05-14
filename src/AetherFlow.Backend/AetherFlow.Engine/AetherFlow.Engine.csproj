@@ -5,13 +5,14 @@
         <PackageReference Include="Akka.Hosting" />
         <PackageReference Include="Akka.Logger.Serilog" />
         <PackageReference Include="Akka.Remote.Hosting" />
-        <PackageReference Include="Microsoft.Extensions.Hosting"/> 
+        <PackageReference Include="Microsoft.Extensions.Hosting" /> 
         <PackageReference Include="Serilog.Expressions" /> 
         <PackageReference Include="Serilog.Settings.Configuration" /> 
         <PackageReference Include="Serilog.Sinks.Console" /> 
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AetherFlow.Backend.ServiceDefaults\AetherFlow.Backend.ServiceDefaults.csproj" />
       <ProjectReference Include="..\AetherFlow.Shared\AetherFlow.Shared.csproj" />
     </ItemGroup>
 </Project>
