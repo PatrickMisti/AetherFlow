@@ -1,3 +1,5 @@
-﻿namespace AetherFlow.Shared.AetherInterfaces;
+﻿using Akka.Cluster.Sharding;
 
-public interface IAetherShardMarker;
+namespace AetherFlow.Shared.AetherInterfaces;
+
+public interface IAetherShardMarker : IClusterShardingSerializable;

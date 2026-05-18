@@ -5,11 +5,15 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Akka" Version="1.5.67" />
+    <PackageVersion Include="Akka.Cluster" Version="1.5.67" />
     <PackageVersion Include="Akka.Cluster.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.Cluster.Sharding" Version="1.5.67" />
     <PackageVersion Include="Akka.DependencyInjection" Version="1.5.67" />
+    <PackageVersion Include="Akka.Discovery" Version="1.5.67" />
     <PackageVersion Include="Akka.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.Logger.Serilog" Version="1.5.67" />
+    <PackageVersion Include="Akka.Management" Version="1.5.67" />
+    <PackageVersion Include="Akka.Remote" Version="1.5.67" />
     <PackageVersion Include="Akka.Remote.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.TestKit.NUnit" Version="1.5.67" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.3.0" />

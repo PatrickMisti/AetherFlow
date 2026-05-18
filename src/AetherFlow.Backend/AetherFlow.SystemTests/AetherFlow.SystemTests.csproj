@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Akka" />
+      <PackageReference Include="Akka.Cluster" />
+      <PackageReference Include="Akka.Discovery" />
+      <PackageReference Include="Akka.Remote" />
+    </ItemGroup>
+
+</Project>

@@ -2,4 +2,9 @@
   <ItemGroup>
     <ProjectReference Include="..\AetherFlow.Domain\AetherFlow.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Akka.Cluster.Hosting" />
+    <PackageReference Include="Akka.Cluster.Sharding" />
+    <PackageReference Include="Akka.Management" />
+  </ItemGroup>
 </Project>
