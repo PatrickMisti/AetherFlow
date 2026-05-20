@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AetherFlow.Engine\AetherFlow.Engine.csproj" />
+    <ProjectReference Include="..\AetherFlow.Ingestion\AetherFlow.Ingestion.csproj" />
   </ItemGroup>
 
   <ItemGroup>

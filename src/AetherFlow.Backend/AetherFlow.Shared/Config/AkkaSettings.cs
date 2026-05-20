@@ -1,31 +1,28 @@
-﻿using System.Net;
-using Akka.Cluster.Hosting;
-using Akka.Management;
-using Akka.Remote.Hosting;
+using System.Net;
 
 namespace AetherFlow.Shared.Config;
 
 public class AkkaSettings
 {
-    public string ActorSystemName { get; set; } = "DrawTogether";
+    public RemoteSettings Remote { get; set; } = new();
+    public ClusterSettings Cluster { get; set; } = new();
+    public ManagementSettings Management { get; set; } = new();
 
-    public bool LogConfigOnStart { get; set; } = false;
-
-    public RemoteOptions RemoteOptions { get; set; } = new()
+    public class RemoteSettings
     {
-        // can be overridden via config, but is dynamic by default
-        PublicHostName = Dns.GetHostName(),
-        Port = 8081
-    };
+        public string Host { get; set; } = Dns.GetHostName();
+        public int Port { get; set; } = 8081;
+    }
 
-    public ClusterOptions ClusterOptions { get; set; } = new ClusterOptions()
+    public class ClusterSettings
     {
-        // use our dynamic local host name by default
-        SeedNodes = [$"akka.tcp://DrawTogether@{Dns.GetHostName()}:8081"],
-        Roles = ["aether-engine"]
-    };
+        public string[] Roles { get; set; } = [];
+        public string ServiceName { get; set; } = "aether-cluster";
+        public int RequiredContactPoints { get; set; } = 1;
+    }
 
-    public ShardOptions ShardOptions { get; set; } = new ShardOptions();
-    
-    public AkkaManagementOptions? AkkaManagementOptions { get; set; }
+    public class ManagementSettings
+    {
+        public int Port { get; set; } = 8888;
+    }
 }

@@ -1,8 +1,9 @@
+using AetherFlow.Backend.ServiceDefaults;
 using AetherFlow.Ingestion.ApplicationBuilderConfig;
 
 Host
     .CreateApplicationBuilder(args)
-    .AddLogging()
+    .AddServiceDefaults()
     .AddServices()
     .UseAkka()
     .Build()
