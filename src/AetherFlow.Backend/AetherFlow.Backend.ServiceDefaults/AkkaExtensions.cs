@@ -88,7 +88,7 @@ public static class AkkaExtensions
                 opt.Services.Add(new Service
                 {
                     Name = "aether-engine",
-                    Endpoints = akka.SeedNodes
+                    Endpoints = [$"{akka.Host}:{akka.Port}"] 
                 });
             });
 
