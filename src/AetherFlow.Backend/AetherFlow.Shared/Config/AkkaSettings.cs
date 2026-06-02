@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 
 namespace AetherFlow.Shared.Config;
@@ -67,12 +66,45 @@ public class AkkaSettings
         public int RequiredContactPoints { get; set; } = 1;
 
         /// <summary>
+        /// Minimum number of members required before the cluster transitions to <c>Up</c>.
+        /// This setting does not prevent local actors from starting before the cluster is <c>Up</c>.
+        /// </summary>
+        public int MinimumNumberOfMembers { get; set; } = 1;
+
+        /// <summary>
         /// Optional static seed nodes used for cluster formation. Each entry should be a full Akka remoting address,
         /// e.g. "akka.tcp://AetherFlowCluster@hostname:8091". When using dynamic discovery (DNS/Kubernetes), prefer
         /// leaving this empty and relying on discovery instead.
-        /// SeedNode host need to be same as ClusterName
         /// </summary>
         public string[] SeedNodes { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Split-brain resolver strategy used when a network partition occurs.
+        /// Defaults to keep-majority.
+        /// </summary>
+        public SplitBrainResolverSettings SplitBrainResolver { get; set; } = new();
+
+        /// <summary>
+        /// Configuration for Akka split-brain handling.
+        /// </summary>
+        public class SplitBrainResolverSettings
+        {
+            /// <summary>
+            /// Strategy name: <c>keep-majority</c>, <c>static-quorum</c>, or <c>keep-oldest</c>.
+            /// </summary>
+            public string Strategy { get; set; } = "keep-majority";
+
+            /// <summary>
+            /// Quorum size used when <see cref="Strategy"/> is <c>static-quorum</c>.
+            /// </summary>
+            public int QuorumSize { get; set; } = 1;
+
+            /// <summary>
+            /// Whether the oldest node should down itself when it becomes isolated.
+            /// Only used when <see cref="Strategy"/> is <c>keep-oldest</c>.
+            /// </summary>
+            public bool DownIfAlone { get; set; }
+        }
     }
 
     /// <summary>

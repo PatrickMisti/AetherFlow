@@ -35,9 +35,9 @@ public static class AkkaExtensions
                     .AddLogging()
                     .AddRemote(settings.Remote.Host, settings.Remote.Port)
                     .AddClustering(settings.Cluster);
-                    // .AddDiscovery(settings) // enable cluster discovery (DNS / Kubernetes) in dynamic environments
-                    // .WithAkkaManagement()   // configure Akka Management when using discovery/bootstrap
-                    
+                // .AddDiscovery(settings) // enable cluster discovery (DNS / Kubernetes) in dynamic environments
+                // .WithAkkaManagement()   // configure Akka Management when using discovery/bootstrap
+
                 additionalConfig?.Invoke(configured, settings);
             });
 
@@ -60,7 +60,7 @@ public static class AkkaExtensions
             });
 
         private AkkaConfigurationBuilder AddDiscovery(AkkaSettings settings)
-        // Useful when running in dynamic environments such as Kubernetes or Azure (enables dynamic discovery).
+            // Useful when running in dynamic environments such as Kubernetes or Azure (enables dynamic discovery).
             => builder
                 .WithAkkaManagement(port: settings.Management.Port, hostName: settings.Remote.Host)
                 // If you need to bind a specific hostname/port (e.g. behind NAT or in Docker), set:
@@ -98,10 +98,35 @@ public static class AkkaExtensions
                 opt.Port = port;
             });
 
-        // Use configured seed nodes (if any). For local testing you may populate SeedNodes in appsettings.
-        // In cloud/Kubernetes, prefer DNS/Kubernetes discovery instead of static seed nodes.
+        /// <summary>
+        /// Applies cluster roles, optional static seed nodes, minimum member gating, and split-brain behavior.
+        /// <para>
+        /// <c>MinimumNumberOfMembers</c> only delays the cluster state transition to <c>Up</c>; it does not stop local actor
+        /// execution before the cluster reaches <c>Up</c>.
+        /// </para>
+        /// <para>
+        /// <c>SplitBrainResolver</c> is set to <c>null</c> here, which disables automatic split-brain downing in this default path.
+        /// If your environment requires an explicit split-brain strategy, configure it through HOCON or environment-specific
+        /// Akka hosting settings.
+        /// </para>
+        /// </summary>
+        /// <param name="cs">Cluster settings loaded from configuration.</param>
+        /// <returns>The same <see cref="AkkaConfigurationBuilder"/> instance for fluent chaining.</returns>
         private AkkaConfigurationBuilder AddClustering(AkkaSettings.ClusterSettings cs)
-            => builder.WithClustering(new ClusterOptions { Roles = cs.Roles, SeedNodes = cs.SeedNodes});
+            => builder.WithClustering(new ClusterOptions
+            {
+                Roles = cs.Roles,
+                SeedNodes = cs.SeedNodes,
+                // SplitBrainResolver = SplitBrainResolverOption.Default
+                // SplitBrainResolver = new KeepMajorityOption()
+                // SplitBrainResolver = new StaticQuorumOption()
+                // {
+                //     QuorumSize = 1
+                // }
+                // SplitBrainResolver = new KeepOldestOption{DownIfAlone = false}
+                // // Disable automatic split-brain resolution to prevent unintended node downing during development/testing
+                SplitBrainResolver = null,
+            });
 
         public AkkaConfigurationBuilder AddShardRegion<TMarker>(
             string typeName,
@@ -119,6 +144,7 @@ public static class AkkaExtensions
                     StateStoreMode = StateStoreMode.DData,
                     PassivateIdleEntityAfter = TimeSpan.FromMinutes(2)
                 });
+
         // Extractor from Akka.net
         /*HashCodeMessageExtractor.Create(maxNumberOfShards: 100,
         entityIdExtractor: msg => msg switch
