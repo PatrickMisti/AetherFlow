@@ -70,6 +70,7 @@ public class AkkaSettings
         /// Optional static seed nodes used for cluster formation. Each entry should be a full Akka remoting address,
         /// e.g. "akka.tcp://AetherFlowCluster@hostname:8091". When using dynamic discovery (DNS/Kubernetes), prefer
         /// leaving this empty and relying on discovery instead.
+        /// SeedNode host need to be same as ClusterName
         /// </summary>
         public string[] SeedNodes { get; set; } = Array.Empty<string>();
     }
