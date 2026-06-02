@@ -23,7 +23,7 @@ internal static class ServiceBuildConfig
                 // di -> into the system
 
                 // registry -> actor can be used outside the actor-system // with IActorRegistry -> GetAsync<T>
-                // registry -> same with IActorRegistry in actor to use other actor in the system
+                // registry -> same with IActorRegistry in actor to use another actor in the system
 
                 // di -> not only into the system also needed to inject into actor
                 // registry to find actor + di to inject actor or class

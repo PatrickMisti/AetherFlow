@@ -8,14 +8,14 @@ internal class AetherChunkAction(ILoggingAdapter log) : IAetherChunkPipelineActi
 {
     public AetherChunk ProcessNotification(AetherChunk chunk)
     {
-        log.Info("Processing notification for chunk: {ChunkId}", chunk.Id);
+        log.Debug("Processing notification for chunk: {ChunkId}", chunk.Id);
         // Todo: send anomaly detection events to live_view
         return chunk;
     }
 
     public void Sink(AetherChunk? chunk)
     {
-        log.Info("Sinking chunk: {ChunkId} to storage", chunk?.Id);
+        log.Debug("Sinking chunk: {ChunkId} to storage", chunk?.Id);
         // Todo: implement sink -> Akka Shard Region
     }
 }

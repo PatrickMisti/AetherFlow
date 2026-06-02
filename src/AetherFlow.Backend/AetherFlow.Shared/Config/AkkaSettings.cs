@@ -1,28 +1,90 @@
+using System;
 using System.Net;
 
 namespace AetherFlow.Shared.Config;
 
+/// <summary>
+/// Root configuration object for Akka.NET networking, clustering, and management endpoints.
+/// This model is typically bound from configuration files and used during actor system startup.
+/// </summary>
 public class AkkaSettings
 {
+    /// <summary>
+    /// Remote transport configuration used by Akka.Remote.
+    /// </summary>
     public RemoteSettings Remote { get; set; } = new();
+
+    /// <summary>
+    /// Cluster behavior and membership configuration used by Akka.Cluster.
+    /// </summary>
     public ClusterSettings Cluster { get; set; } = new();
+
+    /// <summary>
+    /// HTTP management endpoint configuration used by Akka.Management.
+    /// </summary>
     public ManagementSettings Management { get; set; } = new();
 
+    /// <summary>
+    /// Configures Akka.Remote transport settings.
+    /// Needed so this node can accept remote actor traffic on a known host and port.
+    /// The port should be unique per node when multiple nodes run on the same machine; when nodes run on different hosts
+    /// the port can be the same because the host IP differentiates endpoints.
+    /// </summary>
     public class RemoteSettings
     {
+        /// <summary>
+        /// Hostname or IP address this node binds/advertises for remote actor communication.
+        /// </summary>
         public string Host { get; set; } = Dns.GetHostName();
-        public int Port { get; set; } = 8081;
+
+        /// <summary>
+        /// TCP port used for Akka.Remote traffic.
+        /// </summary>
+        public int Port { get; set; } = 8091;
     }
 
+    /// <summary>
+    /// Configures Akka.Cluster participation options.
+    /// Needed to assign node roles, identify the cluster service, and define minimum seed/contact requirements.
+    /// Roles define what responsibilities a node can take and are used for role-based deployment and routing.
+    /// ServiceName must be the same for nodes in the same cluster and different across separate clusters so discovery can distinguish them.
+    /// </summary>
     public class ClusterSettings
     {
-        public string[] Roles { get; set; } = [];
+        /// <summary>
+        /// Logical roles assigned to this node (for role-based deployment and routing).
+        /// </summary>
+        public string[] Roles { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Cluster service/discovery name shared by nodes that belong to the same cluster.
+        /// </summary>
         public string ServiceName { get; set; } = "aether-cluster";
+
+        /// <summary>
+        /// Minimum number of discovered contact points required before bootstrap proceeds.
+        /// </summary>
         public int RequiredContactPoints { get; set; } = 1;
+
+        /// <summary>
+        /// Optional static seed nodes used for cluster formation. Each entry should be a full Akka remoting address,
+        /// e.g. "akka.tcp://AetherFlowCluster@hostname:8091". When using dynamic discovery (DNS/Kubernetes), prefer
+        /// leaving this empty and relying on discovery instead.
+        /// </summary>
+        public string[] SeedNodes { get; set; } = Array.Empty<string>();
     }
 
+    /// <summary>
+    /// Configures Akka.Management HTTP endpoint settings.
+    /// Used for cluster bootstrap, health checks and operational discovery.
+    /// When running multiple processes on one host the management port must be unique per process; when running on
+    /// separate hosts the same port is fine.
+    /// </summary>
     public class ManagementSettings
     {
+        /// <summary>
+        /// HTTP port exposed by Akka.Management for bootstrap and operational endpoints.
+        /// </summary>
         public int Port { get; set; } = 8888;
     }
 }
