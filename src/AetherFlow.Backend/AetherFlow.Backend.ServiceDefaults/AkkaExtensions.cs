@@ -52,45 +52,25 @@ public static class AkkaExtensions
 
     extension(AkkaConfigurationBuilder builder)
     {
+        /// <summary>
+        /// Add Logging to Akka.NET using Serilog.
+        /// This is a common choice for structured logging in .NET applications and integrates well with various logging sinks.
+        /// </summary>
+        /// <returns></returns>
         private AkkaConfigurationBuilder AddLogging()
             => builder.ConfigureLoggers(opt =>
             {
                 opt.ClearLoggers();
                 opt.AddSerilogLogging();
             });
-
-        private AkkaConfigurationBuilder AddDiscovery(AkkaSettings settings)
-            // Useful when running in dynamic environments such as Kubernetes or Azure (enables dynamic discovery).
-            => builder
-                .WithAkkaManagement(port: settings.Management.Port, hostName: settings.Remote.Host)
-                // If you need to bind a specific hostname/port (e.g. behind NAT or in Docker), set:
-                // opt.Http.HostName = settings.Remote.Host;
-                // opt.Http.Port = settings.Management.Port;
-                // bindHost and port if behind NAT or in Docker bridge
-                .WithClusterBootstrap(opt =>
-                {
-                    opt.ContactPointDiscovery.ServiceName = settings.Cluster.ServiceName;
-                    opt.ContactPointDiscovery.RequiredContactPointsNr = settings.Cluster.RequiredContactPoints;
-                    // Force bootstrap to use the 'config' discovery method instead of any system default.
-                    opt.ContactPointDiscovery.DiscoveryMethod = "config";
-
-                    // Required in a localhost environment when both processes run on the same host but use different ports.
-                    opt.ContactPoint.FilterOnFallbackPort = false;
-                })
-                .WithConfigDiscovery(opt =>
-                {
-                    // Register discovered services for ConfigServiceDiscovery. Each node can add its management endpoint
-                    // so Cluster Bootstrap can discover contact points for joining.
-                    opt.Services.Add(new Service
-                    {
-                        Name = settings.Cluster.ServiceName,
-                        // Endpoints = [$"{settings.Remote.Host}:{settings.Management.Port}"]
-                        // For DNS-based discovery, SRV records (host + port) are preferable.
-                        // Hardcoded endpoints (below) are only for local testing:
-                        Endpoints = ["localhost:8890", "localhost:8891"]
-                    });
-                });
-
+        
+        /// <summary>
+        /// Configures Akka.Remote with the specified host and port.
+        /// This enables remote actor communication and is required for clustering.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
         private AkkaConfigurationBuilder AddRemote(string host, int port)
             => builder.WithRemoting(opt =>
             {
@@ -128,6 +108,59 @@ public static class AkkaExtensions
                 SplitBrainResolver = null,
             });
 
+        private AkkaConfigurationBuilder AddDiscovery(AkkaSettings settings)
+            // Useful when running in dynamic environments such as Kubernetes or Azure (enables dynamic discovery).
+            => builder
+                .WithAkkaManagement(port: settings.Management.Port, hostName: settings.Remote.Host)
+                // If you need to bind a specific hostname/port (e.g. behind NAT or in Docker), set:
+                // opt.Http.HostName = settings.Remote.Host;
+                // opt.Http.Port = settings.Management.Port;
+                // bindHost and port if behind NAT or in Docker bridge
+                .WithClusterBootstrap(opt =>
+                {
+                    opt.ContactPointDiscovery.ServiceName = settings.Cluster.ServiceName;
+                    opt.ContactPointDiscovery.RequiredContactPointsNr = settings.Cluster.RequiredContactPoints;
+                    // Force bootstrap to use the 'config' discovery method instead of any system default.
+                    opt.ContactPointDiscovery.DiscoveryMethod = "config";
+
+                    // Required in a localhost environment when both processes run on the same host but use different ports.
+                    opt.ContactPoint.FilterOnFallbackPort = false;
+                })
+                .WithConfigDiscovery(opt =>
+                {
+                    // Register discovered services for ConfigServiceDiscovery. Each node can add its management endpoint
+                    // so Cluster Bootstrap can discover contact points for joining.
+                    opt.Services.Add(new Service
+                    {
+                        Name = settings.Cluster.ServiceName,
+                        // Endpoints = [$"{settings.Remote.Host}:{settings.Management.Port}"]
+                        // For DNS-based discovery, SRV records (host + port) are preferable.
+                        // Hardcoded endpoints (below) are only for local testing:
+                        Endpoints = ["localhost:8890", "localhost:8891"]
+                    });
+                });
+
+        /// <summary>
+        /// Configures and registers a shard region for distributed actor sharding in the Akka.NET cluster.
+        /// <para>
+        /// The <c>typeName</c> parameter is used as both the shard region identifier and, if not explicitly overridden,
+        /// as the cluster role. This ensures consistency between the shard type name and the node role responsible for hosting shards.
+        /// </para>
+        /// <para>
+        /// By default, this method configures:
+        /// <list type="bullet">
+        /// <item><description>Distributed Data (DData) state store mode for shard coordinator resilience</description></item>
+        /// <item><description>Automatic entity passivation after 2 minutes of inactivity</description></item>
+        /// <item><description>Role set to match the provided <c>typeName</c></description></item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TMarker">A marker type implementing <see cref="IClusterShardingSerializable"/> used to identify the shard region type.</typeparam>
+        /// <param name="typeName">The logical name of the shard region. This value is also assigned to the cluster role unless overridden in <paramref name="shardOptions"/>.</param>
+        /// <param name="entityPropsFactory">A factory function that creates <see cref="Props"/> for entities based on the entity ID. Called for each entity instantiation.</param>
+        /// <param name="messageExtractor">Optional message extractor to determine entity ID and shard ID from messages. Defaults to <see cref="CustomMessageExtractor"/> if not provided.</param>
+        /// <param name="shardOptions">Optional shard configuration options. If provided, note that the <c>Role</c> property will be set to <paramref name="typeName"/> unless explicitly configured otherwise before calling this method.</param>
+        /// <returns>The same <see cref="AkkaConfigurationBuilder"/> instance for fluent chaining.</returns>
         public AkkaConfigurationBuilder AddShardRegion<TMarker>(
             string typeName,
             Func<string, Props> entityPropsFactory,
