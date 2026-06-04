@@ -79,6 +79,19 @@ public class AkkaSettings
         public string[] SeedNodes { get; set; } = Array.Empty<string>();
 
         /// <summary>
+        /// Logical name used to identify the shard region in the cluster.
+        /// Must be consistent across all nodes that participate in the same shard region.
+        /// </summary>
+        public string ShardRegionName { get; set; } = "ShardRegion";
+
+        /// <summary>
+        /// Cluster role required to host shards for this region.
+        /// Must match one of the roles in <see cref="Roles"/> on every node intended to host shards.
+        /// When <c>null</c>, defaults to <see cref="ShardRegionName"/> at registration time.
+        /// </summary>
+        public string? ShardRegionRole { get; set; }
+
+        /// <summary>
         /// Split-brain resolver strategy used when a network partition occurs.
         /// Defaults to keep-majority.
         /// </summary>

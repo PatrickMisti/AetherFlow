@@ -14,7 +14,7 @@ public static class ServiceBuilderConfig
             return builder.AddAkkaDefaults((config, settings) =>
             {
                 config.AddShardRegion<IAetherShardMarker>(
-                    typeName: settings.Cluster.Roles.FirstOrDefault() ?? settings.Cluster.ServiceName,
+                    settings: settings,
                     props => Props.Create(() => new AetherEngineActor(props)));
             });
         }

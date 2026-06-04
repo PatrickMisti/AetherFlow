@@ -1,13 +1,9 @@
 using AetherFlow.Backend.ServiceDefaults;
-using AetherFlow.Engine;
 using AetherFlow.Engine.ApplicationBuilderConfig;
 
-var builder = Host.CreateApplicationBuilder(args);
-
-builder
+Host
+    .CreateApplicationBuilder(args)
     .AddServiceDefaults()
-    .WithEngineWorker();
-
-// builder.Services.AddHostedService<Worker>();
-var host = builder.Build();
-host.Run();
+    .WithEngineWorker()
+    .Build()
+    .Run();

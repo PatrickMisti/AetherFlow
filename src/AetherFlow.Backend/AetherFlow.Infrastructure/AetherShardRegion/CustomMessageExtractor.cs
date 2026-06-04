@@ -1,4 +1,5 @@
-﻿using Akka.Cluster.Sharding;
+﻿using AetherFlow.Shared.Messages;
+using Akka.Cluster.Sharding;
 
 namespace AetherFlow.Infrastructure.AetherShardRegion;
 
@@ -8,6 +9,7 @@ public sealed class CustomMessageExtractor : HashCodeMessageExtractor
         
     public override string? EntityId(object message) => message switch
     {
+        BaseShardMessage baseMessage => baseMessage.EntityId,
         _ => null
     };
 

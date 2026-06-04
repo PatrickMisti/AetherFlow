@@ -143,37 +143,39 @@ public static class AkkaExtensions
         /// <summary>
         /// Configures and registers a shard region for distributed actor sharding in the Akka.NET cluster.
         /// <para>
-        /// The <c>typeName</c> parameter is used as both the shard region identifier and, if not explicitly overridden,
-        /// as the cluster role. This ensures consistency between the shard type name and the node role responsible for hosting shards.
+        /// Uses <see cref="AkkaSettings.ClusterSettings.ShardRegionName"/> as the shard region identifier and
+        /// <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/> as the cluster role. When <c>ShardRegionRole</c>
+        /// is <c>null</c>, it falls back to <c>ShardRegionName</c>. The role must match one of the roles in
+        /// <see cref="AkkaSettings.ClusterSettings.Roles"/> on every node intended to host shards.
         /// </para>
         /// <para>
         /// By default, this method configures:
         /// <list type="bullet">
         /// <item><description>Distributed Data (DData) state store mode for shard coordinator resilience</description></item>
         /// <item><description>Automatic entity passivation after 2 minutes of inactivity</description></item>
-        /// <item><description>Role set to match the provided <c>typeName</c></description></item>
+        /// <item><description>Role derived from <c>ShardRegionRole ?? ShardRegionName</c></description></item>
         /// </list>
         /// </para>
         /// </summary>
         /// <typeparam name="TMarker">A marker type implementing <see cref="IClusterShardingSerializable"/> used to identify the shard region type.</typeparam>
-        /// <param name="typeName">The logical name of the shard region. This value is also assigned to the cluster role unless overridden in <paramref name="shardOptions"/>.</param>
+        /// <param name="settings">Akka settings providing the shard region name and role from <c>Cluster</c> configuration.</param>
         /// <param name="entityPropsFactory">A factory function that creates <see cref="Props"/> for entities based on the entity ID. Called for each entity instantiation.</param>
         /// <param name="messageExtractor">Optional message extractor to determine entity ID and shard ID from messages. Defaults to <see cref="CustomMessageExtractor"/> if not provided.</param>
-        /// <param name="shardOptions">Optional shard configuration options. If provided, note that the <c>Role</c> property will be set to <paramref name="typeName"/> unless explicitly configured otherwise before calling this method.</param>
+        /// <param name="shardOptions">Optional shard configuration options. When provided, <c>Role</c> is still derived from settings unless the caller sets it explicitly before passing.</param>
         /// <returns>The same <see cref="AkkaConfigurationBuilder"/> instance for fluent chaining.</returns>
         public AkkaConfigurationBuilder AddShardRegion<TMarker>(
-            string typeName,
+            AkkaSettings settings,
             Func<string, Props> entityPropsFactory,
             IMessageExtractor? messageExtractor = null,
             ShardOptions? shardOptions = null)
             where TMarker : IClusterShardingSerializable
             => builder.WithShardRegion<TMarker>(
-                typeName: typeName,
+                typeName: settings.Cluster.ShardRegionName,
                 entityPropsFactory: entityPropsFactory,
                 messageExtractor: messageExtractor ?? CustomMessageExtractor.Create(),
                 shardOptions: shardOptions ?? new()
                 {
-                    Role = typeName,
+                    Role = settings.Cluster.ShardRegionRole ?? settings.Cluster.ShardRegionName,
                     StateStoreMode = StateStoreMode.DData,
                     PassivateIdleEntityAfter = TimeSpan.FromMinutes(2)
                 });
