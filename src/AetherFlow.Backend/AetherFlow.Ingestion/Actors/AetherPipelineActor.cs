@@ -3,7 +3,9 @@ using AetherFlow.Ingestion.PipelineActions;
 using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
 using Akka.Actor;
+using Akka.Cluster;
 using Akka.Event;
+using Akka.Hosting;
 using Serilog;
 
 namespace AetherFlow.Ingestion.Actors;
@@ -12,10 +14,16 @@ public sealed class AetherPipelineActor : ReceiveActor
 {
     private readonly ILoggingAdapter _log = Context.GetLogger();
     private readonly IAetherPipeline _pipeline;
+    
+    private readonly string _shardRegionRole;
+    private readonly IActorRef _shardProxy;
+    private AetherChunkAction? _aetherChunkAction;
 
-    public AetherPipelineActor()
+    public AetherPipelineActor(IRequiredActor<IAetherShardProxyMarker> shardProxy, string shardRegionRole)
     {
         _pipeline = new AetherPipeline(Log.ForContext<AetherPipelineActor>());
+        _shardProxy = shardProxy.ActorRef;
+        _shardRegionRole = shardRegionRole;
 
         Receive<StartPipelineMessage>(_ => HandleStartPipeline());
         ReceiveAsync<OfferChunksMessage>(HandleOfferAsync);
@@ -26,20 +34,41 @@ public sealed class AetherPipelineActor : ReceiveActor
             await _pipeline.StopAsync();
             Context.Stop(Self);
         });
+        
+        Receive<ClusterEvent.MemberUp>(msg => HandleMemberEvent(msg.Member));
+        Receive<ClusterEvent.MemberRemoved>(msg => HandleMemberEvent(msg.Member));
     }
 
     private void HandleStartPipeline()
     {
         _log.Info("Starting pipeline");
-        var action = new AetherChunkAction(_log);
-        _pipeline.Start(action);
+        _aetherChunkAction = new AetherChunkAction(_log, _shardProxy, Self);
+        _pipeline.Start(_aetherChunkAction);
     }
 
-    private async Task HandleOfferAsync(OfferChunksMessage msg)
+    private Task HandleOfferAsync(OfferChunksMessage msg)
     {
         _log.Debug("Offering {ChunkCount} chunks to pipeline", msg.Chunks.Length);
-        await _pipeline.OfferAsync(msg.Chunks);
+        return _pipeline.OfferAsync(msg.Chunks);
     }
 
     private void HandleStatus() => Sender.Tell(new PipelineStatusResponse(_pipeline.IsRunning()));
+
+    protected override void PreStart()
+    {
+        Cluster.Get(Context.System)
+            .Subscribe(
+                Self,
+                typeof(ClusterEvent.MemberUp),
+                typeof(ClusterEvent.MemberRemoved));
+    }
+    
+    private void HandleMemberEvent(Member member)
+    {
+        if (!member.HasRole(_shardRegionRole)) return;
+        
+        _aetherChunkAction?.IsConnectedToShard = member.Status == MemberStatus.Up;
+        _log.Info("Shard region member {MemberAddress} is now {MemberStatus}. Connected to shard: {IsConnectedToShard}",
+            member.Address, member.Status, _aetherChunkAction?.IsConnectedToShard);
+    }
 }

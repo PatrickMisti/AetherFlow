@@ -3,5 +3,5 @@ using Akka.Actor;
 
 namespace AetherFlow.Shared.Messages.ShardRegion;
 
-public record ChunkShardMessage(string EntityId, AetherChunk Chunk, IActorRef ActorRef) 
-    : BaseShardMessage(EntityId, ActorRef);
+public record ChunkShardMessage(string EntityId, AetherChunk Chunk, IActorRef Sender) 
+    : BaseShardMessage(EntityId, Sender);

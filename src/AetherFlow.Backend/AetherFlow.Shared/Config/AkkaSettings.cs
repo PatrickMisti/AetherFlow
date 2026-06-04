@@ -89,7 +89,7 @@ public class AkkaSettings
         /// Must match one of the roles in <see cref="Roles"/> on every node intended to host shards.
         /// When <c>null</c>, defaults to <see cref="ShardRegionName"/> at registration time.
         /// </summary>
-        public string? ShardRegionRole { get; set; }
+        public string ShardRegionRole { get; set; } = "aether-engine";
 
         /// <summary>
         /// Split-brain resolver strategy used when a network partition occurs.

@@ -145,7 +145,7 @@ public static class AkkaExtensions
         /// <para>
         /// Uses <see cref="AkkaSettings.ClusterSettings.ShardRegionName"/> as the shard region identifier and
         /// <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/> as the cluster role. When <c>ShardRegionRole</c>
-        /// is <c>null</c>, it falls back to <c>ShardRegionName</c>. The role must match one of the roles in
+        /// is <c>null</c>, it falls back to <c>aether-engine</c>. The role must match one of the roles in
         /// <see cref="AkkaSettings.ClusterSettings.Roles"/> on every node intended to host shards.
         /// </para>
         /// <para>
@@ -175,7 +175,7 @@ public static class AkkaExtensions
                 messageExtractor: messageExtractor ?? CustomMessageExtractor.Create(),
                 shardOptions: shardOptions ?? new()
                 {
-                    Role = settings.Cluster.ShardRegionRole ?? settings.Cluster.ShardRegionName,
+                    Role = settings.Cluster.ShardRegionRole,
                     StateStoreMode = StateStoreMode.DData,
                     PassivateIdleEntityAfter = TimeSpan.FromMinutes(2)
                 });
@@ -186,5 +186,21 @@ public static class AkkaExtensions
         {
             _ => null
         }),*/
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="messageExtractor"></param>
+        /// <typeparam name="TMarker"></typeparam>
+        /// <returns></returns>
+        public AkkaConfigurationBuilder AddShardRegionProxy<TMarker>(
+            AkkaSettings settings,
+            IMessageExtractor? messageExtractor = null)
+            where TMarker : IClusterShardingSerializable
+            => builder.WithShardRegionProxy<TMarker>(
+                typeName: settings.Cluster.ShardRegionName,
+                roleName: settings.Cluster.ShardRegionRole,
+                messageExtractor: messageExtractor ?? CustomMessageExtractor.Create());
     }
 }

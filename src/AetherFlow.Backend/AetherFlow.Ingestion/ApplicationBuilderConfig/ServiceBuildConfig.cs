@@ -18,6 +18,7 @@ internal static class ServiceBuildConfig
         {
             builder.AddAkkaDefaults((config, settings) =>
             {
+                config.AddShardRegionProxy<IAetherShardProxyMarker>(settings: settings);
                 // system -> actor-system
                 // registry -> out of system // DI container for actors // only for node not for cluster
                 // di -> into the system
@@ -29,7 +30,7 @@ internal static class ServiceBuildConfig
                 // registry to find actor + di to inject actor or class
                 config.WithActors((system, registry, di) =>
                 {
-                    var pipActor = system.ActorOf(di.Props<AetherPipelineActor>());
+                    var pipActor = system.ActorOf(di.Props<AetherPipelineActor>(settings.Cluster.ShardRegionRole));
                     var genSupervisor = system.ActorOf(di.Props<AetherSupervisorActor>());
 
                     registry.Register<AetherSupervisorActor>(genSupervisor);

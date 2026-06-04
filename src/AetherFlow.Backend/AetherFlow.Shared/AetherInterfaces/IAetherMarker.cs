@@ -3,3 +3,5 @@
 namespace AetherFlow.Shared.AetherInterfaces;
 
 public interface IAetherShardMarker : IClusterShardingSerializable;
+
+public interface IAetherShardProxyMarker : IClusterShardingSerializable;

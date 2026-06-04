@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using AetherFlow.Shared.Messages.ShardRegion;
+using Akka.Actor;
 using Akka.Event;
 
 namespace AetherFlow.Engine.Actors;
@@ -11,9 +12,9 @@ public class AetherEngineActor : ReceiveActor
     {
         _entityId = entityId;
         
-        Receive<Test>(msg =>
+        Receive<ChunkShardMessage>(msg =>
         {
-            Context.GetLogger().Info($"Received message: {msg.Message} in actor: {_entityId}");
+            Context.GetLogger().Info($"Received message: {msg.EntityId} in actor: {_entityId}");
         });
     }
 }
