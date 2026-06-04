@@ -1,20 +1,22 @@
 ﻿using AetherFlow.Shared.Messages.ShardRegion;
 using Akka.Actor;
 using Akka.Event;
+using Akka.Persistence;
 
 namespace AetherFlow.Engine.Actors;
 
-public class AetherEngineActor : ReceiveActor
+public class AetherEngineActor : ReceivePersistentActor
 {
-    private readonly string _entityId;
-    
-    public  AetherEngineActor(string entityId)
+    public override string PersistenceId { get; } = Context.Self.Path.Name;
+    private readonly ILoggingAdapter _log = Context.GetLogger();
+
+    public AetherEngineActor()
     {
-        _entityId = entityId;
-        
-        Receive<ChunkShardMessage>(msg =>
-        {
-            Context.GetLogger().Info($"Received message: {msg.EntityId} in actor: {_entityId}");
-        });
+        Command<ChunkShardMessage>(HandleChunkMessage);
+    }
+
+    private void HandleChunkMessage(ChunkShardMessage msg)
+    {
+        _log.Debug("Handling chunk message for entity {EntityId}", msg.EntityId);
     }
 }

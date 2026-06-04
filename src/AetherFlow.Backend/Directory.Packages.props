@@ -13,11 +13,14 @@
     <PackageVersion Include="Akka.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.Logger.Serilog" Version="1.5.67" />
     <PackageVersion Include="Akka.Management" Version="1.5.67" />
+    <PackageVersion Include="Akka.Persistence" Version="1.5.68" />
+    <PackageVersion Include="Akka.Persistence.Sql.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.Remote" Version="1.5.67" />
     <PackageVersion Include="Akka.Remote.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.TestKit.NUnit" Version="1.5.67" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.3.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="11.0.0-preview.4.26230.115" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="11.0.0-preview.3.26207.106" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />

@@ -3,6 +3,7 @@ using AetherFlow.Shared.Config;
 using Akka.Actor;
 using Akka.Cluster.Hosting;
 using Akka.Cluster.Sharding;
+using Akka.DependencyInjection;
 using Akka.Discovery.Config.Hosting;
 using Akka.Hosting;
 using Akka.Logger.Serilog;
@@ -63,7 +64,7 @@ public static class AkkaExtensions
                 opt.ClearLoggers();
                 opt.AddSerilogLogging();
             });
-        
+
         /// <summary>
         /// Configures Akka.Remote with the specified host and port.
         /// This enables remote actor communication and is required for clustering.
@@ -144,16 +145,16 @@ public static class AkkaExtensions
         /// Configures and registers a shard region for distributed actor sharding in the Akka.NET cluster.
         /// <para>
         /// Uses <see cref="AkkaSettings.ClusterSettings.ShardRegionName"/> as the shard region identifier and
-        /// <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/> as the cluster role. When <c>ShardRegionRole</c>
-        /// is <c>null</c>, it falls back to <c>aether-engine</c>. The role must match one of the roles in
-        /// <see cref="AkkaSettings.ClusterSettings.Roles"/> on every node intended to host shards.
+        /// <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/> as the cluster role. The role must match
+        /// one of the roles in <see cref="AkkaSettings.ClusterSettings.Roles"/> on every node intended to host shards.
         /// </para>
         /// <para>
         /// By default, this method configures:
         /// <list type="bullet">
-        /// <item><description>Distributed Data (DData) state store mode for shard coordinator resilience</description></item>
+        /// <item><description>Event-sourced persistence state store mode for shard coordinator resilience</description></item>
         /// <item><description>Automatic entity passivation after 2 minutes of inactivity</description></item>
-        /// <item><description>Role derived from <c>ShardRegionRole ?? ShardRegionName</c></description></item>
+        /// <item><description>Remember entities via event-sourced store so entity IDs survive rebalancing and shutdown</description></item>
+        /// <item><description>Role set from <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/></description></item>
         /// </list>
         /// </para>
         /// </summary>
@@ -165,7 +166,7 @@ public static class AkkaExtensions
         /// <returns>The same <see cref="AkkaConfigurationBuilder"/> instance for fluent chaining.</returns>
         public AkkaConfigurationBuilder AddShardRegion<TMarker>(
             AkkaSettings settings,
-            Func<string, Props> entityPropsFactory,
+            Func<ActorSystem, IActorRegistry, IDependencyResolver, Func<string, Props>> entityPropsFactory,
             IMessageExtractor? messageExtractor = null,
             ShardOptions? shardOptions = null)
             where TMarker : IClusterShardingSerializable
@@ -176,9 +177,28 @@ public static class AkkaExtensions
                 shardOptions: shardOptions ?? new()
                 {
                     Role = settings.Cluster.ShardRegionRole,
-                    StateStoreMode = StateStoreMode.DData,
-                    PassivateIdleEntityAfter = TimeSpan.FromMinutes(2)
+                    StateStoreMode = StateStoreMode.Persistence,
+                    PassivateIdleEntityAfter = TimeSpan.FromMinutes(2),
+                    // so after shutdown or rebalancing actor info isn't lost
+                    // without after passivation entity id would be lost only grab id with new incoming msg
+                    RememberEntities = true,
+                    // ddata only remembers CRDT (Distributed Data) not state with eventsourced usage of journal
+                    RememberEntitiesStore = RememberEntitiesStore.Eventsourced,
+                    ShouldPassivateIdleEntities = true
                 });
+
+        public AkkaConfigurationBuilder AddShardRegion<TMarker>(
+            AkkaSettings settings,
+            Func<IDependencyResolver, Props> entityPropsFactory,
+            IMessageExtractor? messageExtractor = null,
+            ShardOptions? shardOptions = null)
+            where TMarker : IClusterShardingSerializable
+            => builder.AddShardRegion<TMarker>(
+                settings: settings,
+                entityPropsFactory: (_, _, di) => (_) => entityPropsFactory.Invoke(di),
+                messageExtractor: messageExtractor,
+                shardOptions: shardOptions);
+
 
         // Extractor from Akka.net
         /*HashCodeMessageExtractor.Create(maxNumberOfShards: 100,
@@ -186,14 +206,20 @@ public static class AkkaExtensions
         {
             _ => null
         }),*/
-        
+
         /// <summary>
-        /// 
+        /// Registers a shard region proxy on this node, allowing it to forward messages to shard entities
+        /// hosted on other nodes without hosting any shards itself.
+        /// <para>
+        /// Uses <see cref="AkkaSettings.ClusterSettings.ShardRegionName"/> as the shard region identifier and
+        /// <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/> as the target role. The proxy buffers
+        /// messages internally until a node with the matching role is <c>Up</c> in the cluster.
+        /// </para>
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="messageExtractor"></param>
-        /// <typeparam name="TMarker"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="TMarker">A marker type implementing <see cref="IClusterShardingSerializable"/> used to resolve the proxy via <c>IActorRegistry</c>.</typeparam>
+        /// <param name="settings">Akka settings providing the shard region name and role from <c>Cluster</c> configuration.</param>
+        /// <param name="messageExtractor">Optional message extractor to determine entity ID and shard ID from messages. Defaults to <see cref="CustomMessageExtractor"/> if not provided.</param>
+        /// <returns>The same <see cref="AkkaConfigurationBuilder"/> instance for fluent chaining.</returns>
         public AkkaConfigurationBuilder AddShardRegionProxy<TMarker>(
             AkkaSettings settings,
             IMessageExtractor? messageExtractor = null)
