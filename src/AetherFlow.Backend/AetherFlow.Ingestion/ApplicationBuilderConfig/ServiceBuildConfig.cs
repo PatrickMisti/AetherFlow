@@ -6,7 +6,6 @@ using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
 using Akka.Actor;
 using Akka.Hosting;
-using Microsoft.Extensions.Hosting;
 
 namespace AetherFlow.Ingestion.ApplicationBuilderConfig;
 

@@ -2,8 +2,6 @@ using AetherFlow.Backend.ServiceDefaults;
 using AetherFlow.Engine.Actors;
 using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Config;
-using Akka.Actor;
-using Akka.DependencyInjection;
 using Akka.Hosting;
 using Akka.Persistence.Sql.Hosting;
 
@@ -20,13 +18,12 @@ public static class ServiceBuilderConfig
         /// </summary>
         public T WithEngineWorker()
         {
-            return builder.AddAkkaDefaults((config, settings) =>
-            {
-                config.AddShardRegion<IAetherShardMarker>(
-                    settings: settings,
-                    (di) => di.Props<AetherEngineActor>());
-                config.AddPersistence(builder.Configuration);
-            });
+            return builder.AddAkkaDefaults((config, settings)
+                => config
+                    .AddShardRegion<IAetherShardMarker>(
+                        settings: settings,
+                        di => di.Props<AetherEngineActor>())
+                    .AddPersistence(builder.Configuration));
         }
     }
 
@@ -40,7 +37,7 @@ public static class ServiceBuilderConfig
                 connectionString: dbConfig.ConnectionString,
                 providerName: dbConfig.ProviderName,
                 autoInitialize: true);
-            
+
             return config;
         }
     }

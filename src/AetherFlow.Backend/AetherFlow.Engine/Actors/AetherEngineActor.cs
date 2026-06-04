@@ -1,5 +1,4 @@
 ﻿using AetherFlow.Shared.Messages.ShardRegion;
-using Akka.Actor;
 using Akka.Event;
 using Akka.Persistence;
 
@@ -12,6 +11,10 @@ public class AetherEngineActor : ReceivePersistentActor
 
     public AetherEngineActor()
     {
+        // Todo: handle chunk messages and perform anomaly detection
+        // Todo: persist chunk messages and replay on recovery
+        // Todo: make notifier for live view updates and send notifications on anomalies
+        // setup should work now with akka.db 
         Command<ChunkShardMessage>(HandleChunkMessage);
     }
 
