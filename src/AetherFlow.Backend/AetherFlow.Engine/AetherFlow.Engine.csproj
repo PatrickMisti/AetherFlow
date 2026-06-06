@@ -7,6 +7,7 @@
         <PackageReference Include="Akka.Persistence" />
         <PackageReference Include="Akka.Persistence.Sql.Hosting" />
         <PackageReference Include="Akka.Remote.Hosting" />
+        <PackageReference Include="Akka.Streams" />
         <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="Microsoft.Extensions.Hosting" /> 
         <PackageReference Include="Serilog.Expressions" /> 

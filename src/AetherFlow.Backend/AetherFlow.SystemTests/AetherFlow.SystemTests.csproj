@@ -8,5 +8,8 @@
       <PackageReference Include="Akka.Discovery" />
       <PackageReference Include="Akka.Remote" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\AetherFlow.Domain\AetherFlow.Domain.csproj" />
+    </ItemGroup>
 
 </Project>

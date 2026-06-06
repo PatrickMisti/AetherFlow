@@ -1,5 +1,6 @@
-using AetherFlow.Backend.ServiceDefaults;
+﻿using AetherFlow.Backend.ServiceDefaults;
 using AetherFlow.Engine.Actors;
+using AetherFlow.Infrastructure.AetherShardRegion;
 using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Config;
 using Akka.Hosting;
@@ -22,7 +23,8 @@ public static class ServiceBuilderConfig
                 => config
                     .AddShardRegion<IAetherShardMarker>(
                         settings: settings,
-                        di => di.Props<AetherEngineActor>())
+                        messageExtractor: KindMessageExtractor.Create(),
+                        entityPropsFactory: di => di.Props<AetherEngineActor>())
                     .AddPersistence(builder.Configuration));
         }
     }
