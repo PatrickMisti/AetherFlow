@@ -1,6 +1,6 @@
 ﻿namespace AetherFlow.Shared.Messages.Notifications;
 
-public class ChunkAnomalyNotification
+public record ChunkAnomalyNotification(string Designation, bool NoValue, bool UnknownType) : INotification
 {
-    
+    public Guid Id { get; init; } = Guid.NewGuid();
 }

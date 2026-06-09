@@ -13,7 +13,11 @@ internal class AetherChunkAction(ILoggingAdapter log, IActorRef sink, IActorRef 
     public AetherChunk ProcessNotification(AetherChunk chunk)
     {
         log.Debug("Processing notification for chunk: {ChunkId}", chunk.Id);
-        // Todo: send anomaly detection events to live_view
+        if (!chunk.IsValid || !chunk.IsValidValue)
+        {
+            log.Warning("Chunk is not valid UnkownType: {UnknownType} NoValue: {NoValue}", !chunk.IsValid, !chunk.IsValidValue);
+            // ChunkAnomalyNotification
+        }
         return chunk;
     }
 

@@ -16,4 +16,14 @@ public record AetherChunk(
     public Guid Id { get; init; } = Guid.NewGuid();
 
     public DateTime LastWhisperUtc { get; init; } = DateTime.UtcNow;
+
+    public bool IsValid => Kind != AetherConstructKind.Unknown &&
+                           Status != AetherPresence.Unknown &&
+                           Presence != ManifestationState.Unknown &&
+                           ChargeState != AetherChargeState.Unknown;
+
+    public bool IsValidValue => WarmthC is not null && 
+                                WeightPressureHpa is not null && 
+                                MistPercent is null &&
+                                ChargePercent is null;
 }
