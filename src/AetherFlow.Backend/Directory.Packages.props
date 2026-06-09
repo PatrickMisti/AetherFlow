@@ -14,6 +14,7 @@
     <PackageVersion Include="Akka.Logger.Serilog" Version="1.5.67" />
     <PackageVersion Include="Akka.Management" Version="1.5.67" />
     <PackageVersion Include="Akka.Persistence" Version="1.5.68" />
+    <PackageVersion Include="Akka.Persistence.Sql" Version="1.5.67" />
     <PackageVersion Include="Akka.Persistence.Sql.Hosting" Version="1.5.67" />
     <PackageVersion Include="Akka.Remote" Version="1.5.67" />
     <PackageVersion Include="Akka.Remote.Hosting" Version="1.5.67" />
@@ -26,6 +27,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="11.0.0-preview.3.26207.106" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="NUnit" Version="4.6.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.13.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />

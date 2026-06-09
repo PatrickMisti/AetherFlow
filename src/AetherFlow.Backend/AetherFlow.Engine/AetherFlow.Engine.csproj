@@ -5,11 +5,13 @@
         <PackageReference Include="Akka.Hosting" />
         <PackageReference Include="Akka.Logger.Serilog" />
         <PackageReference Include="Akka.Persistence" />
+        <PackageReference Include="Akka.Persistence.Sql" />
         <PackageReference Include="Akka.Persistence.Sql.Hosting" />
         <PackageReference Include="Akka.Remote.Hosting" />
         <PackageReference Include="Akka.Streams" />
         <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="Microsoft.Extensions.Hosting" /> 
+        <PackageReference Include="Npgsql" /> 
         <PackageReference Include="Serilog.Expressions" /> 
         <PackageReference Include="Serilog.Settings.Configuration" /> 
         <PackageReference Include="Serilog.Sinks.Console" /> 

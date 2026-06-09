@@ -185,9 +185,9 @@ public static class AkkaExtensions
                     PassivateIdleEntityAfter = TimeSpan.FromMinutes(2),
                     // so after shutdown or rebalancing actor info isn't lost
                     // without after passivation entity id would be lost only grab id with new incoming msg
-                    RememberEntities = true,
+                    RememberEntities = false,
                     // ddata only remembers CRDT (Distributed Data) not state with eventsourced usage of journal
-                    RememberEntitiesStore = RememberEntitiesStore.Eventsourced,
+                    RememberEntitiesStore = RememberEntitiesStore.Eventsourced, // todo test if needed
                     ShouldPassivateIdleEntities = true
                 });
 

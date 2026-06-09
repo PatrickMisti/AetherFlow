@@ -20,10 +20,11 @@ public sealed class KindMessageExtractor : IMessageExtractor
         if (message is not ChunkShardMessage chunk)
             throw new ArgumentException($"Unexpected message type: {message.GetType().Name}");
 
-        return chunk.Chunk.Kind.ToString();
+        var hash = Math.Abs(chunk.EntityId.GetHashCode()) % 20;
+        return hash.ToString();
     }
 
-    public string ShardId(string entityId, object? messageHint = null) => entityId;
+    public string ShardId(string entityId, object? messageHint = null) => (Math.Abs(entityId.GetHashCode()) % 20).ToString();
     
     public static KindMessageExtractor Create() => new();
 }
