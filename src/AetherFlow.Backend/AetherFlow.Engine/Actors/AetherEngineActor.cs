@@ -26,9 +26,6 @@ public class AetherEngineActor : ReceivePersistentActor
     public AetherEngineActor(SharedKillSwitch? killSwitch = null)
     {
         _killSwitch = killSwitch ?? KillSwitches.Shared("aether-engine-kill-switch");
-        // Todo: handle chunk messages and perform anomaly detection
-        // Todo: make notifier for live view updates and send notifications on anomalies
-        
         Command<SubscribeAck>(_ => Become(Initialize));
     }
 
