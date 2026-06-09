@@ -3,6 +3,7 @@ using AetherFlow.Engine.Actors;
 using AetherFlow.Infrastructure.AetherShardRegion;
 using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Config;
+using Akka.Cluster.Hosting;
 using Akka.Hosting;
 using Akka.Persistence.Sql.Hosting;
 
@@ -25,6 +26,7 @@ public static class ServiceBuilderConfig
                         settings: settings,
                         messageExtractor: KindMessageExtractor.Create(),
                         entityPropsFactory: di => di.Props<AetherEngineActor>())
+                    .WithDistributedPubSub(string.Empty)
                     .AddPersistence(builder.Configuration));
         }
     }

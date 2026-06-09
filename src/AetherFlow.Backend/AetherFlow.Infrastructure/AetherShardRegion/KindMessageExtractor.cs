@@ -1,5 +1,6 @@
 ﻿using AetherFlow.Domain.Domains;
 using AetherFlow.Shared.Messages;
+using AetherFlow.Shared.Messages.ShardRegion;
 using Akka.Cluster.Sharding;
 
 namespace AetherFlow.Infrastructure.AetherShardRegion;
@@ -16,10 +17,10 @@ public sealed class KindMessageExtractor : IMessageExtractor
 
     public string? ShardId(object message)
     {
-        if (message is not AetherChunk chunk)
+        if (message is not ChunkShardMessage chunk)
             throw new ArgumentException($"Unexpected message type: {message.GetType().Name}");
 
-        return chunk.Kind.ToString();
+        return chunk.Chunk.Kind.ToString();
     }
 
     public string ShardId(string entityId, object? messageHint = null) => entityId;
