@@ -9,6 +9,6 @@ public class NotifyHandler : ReceiveActor
     
     public NotifyHandler()
     {
-        ReceiveAny(msg => _log.Info("Received notification: {msg}", msg));
+        ReceiveAny(msg => _log.Debug("Received notification: {msg}", msg));
     }
 }

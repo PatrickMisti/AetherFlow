@@ -31,6 +31,7 @@ public class AetherEngineActor : ReceivePersistentActor
     {
         _killSwitch = killSwitch ?? KillSwitches.Shared("aether-engine-kill-switch");
         _notifyHandler = notifyHandler.ActorRef;
+        RecoveryMessages();
         Command<SubscribeAck>(_ => Become(Initialize));
     }
 
@@ -53,8 +54,6 @@ public class AetherEngineActor : ReceivePersistentActor
 
             SaveSnapshot(msg);
         });
-
-        RecoveryMessages();
     }
 
     private void RecoveryMessages()
@@ -89,30 +88,30 @@ public class AetherEngineActor : ReceivePersistentActor
     private AetherEngineValue TransformAndNotifyHandler(AetherChunk chunk)
     {
         _log.Debug("Transform chunk to engine value");
-        if (chunk.Presence == ManifestationState.Absent) 
+        if (chunk.Presence == ManifestationState.Absent)
         {
             _log.Debug("Chunk is absent, sending manifestation state absent notification");
             _notifyHandler.Tell(ManifestationStateAbsentNotification.Instance);
         }
-        
+
         _log.Debug("Chunk charging level is {chargeState}, sending charge state notification", chunk.ChargeState);
         _notifyHandler.Tell(new ChargingLevelNotification(PersistenceId, chunk.ChargeState));
-        
+
         return chunk.ToEngineValue();
     }
 
     private AetherChunk UnpackMsgAndNotifyHandler(ChunkShardMessage msg)
     {
-        _log.Debug("Processing unpack chunk shard message for entity {entityId} with created time: {created}", msg.EntityId,
+        _log.Debug("Processing unpack chunk shard message for entity {entityId} with created time: {created}",
+            msg.EntityId,
             msg.Created);
-        
-        var notification = new CalculationLatencyNotification(
+
+        _notifyHandler.Tell(new CalculationLatencyNotification(
             msg.EntityId,
             LatencyBtwCreateAndShipped: msg.Created - msg.Chunk.LastWhisperUtc,
             LatencyBtwShippedAndTransformed: DateTime.UtcNow - msg.Created
-        );
-        
-        // todo send to handler
+        ));
+
         return msg.Chunk;
     }
 

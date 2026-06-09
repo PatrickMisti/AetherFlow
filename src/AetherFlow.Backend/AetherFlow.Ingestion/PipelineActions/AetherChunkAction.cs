@@ -17,7 +17,7 @@ internal class AetherChunkAction(ILoggingAdapter log, IActorRef sink, IActorRef 
         
         if (!chunk.IsValid || !chunk.IsValidValue)
         {
-            log.Warning("Chunk is not valid UnkownType: {UnknownType} NoValue: {NoValue}", !chunk.IsValid, !chunk.IsValidValue);
+            log.Debug("Chunk is not valid UnkownType: {UnknownType} NoValue: {NoValue}", !chunk.IsValid, !chunk.IsValidValue);
             notifier.Tell(new ChunkAnomalyNotification(
                 Designation: chunk.Designation,
                 NoValue: !chunk.IsValidValue,
