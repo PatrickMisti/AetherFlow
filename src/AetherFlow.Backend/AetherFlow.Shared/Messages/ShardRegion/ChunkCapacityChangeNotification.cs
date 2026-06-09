@@ -5,5 +5,5 @@ namespace AetherFlow.Shared.Messages.ShardRegion;
 
 public record ChunkCapacityChangeNotification(int Capacity, IActorRef Sender) : INotification
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
 }

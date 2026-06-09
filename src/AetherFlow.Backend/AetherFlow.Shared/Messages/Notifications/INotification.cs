@@ -2,5 +2,5 @@
 
 public interface INotification
 {
-    public Guid Id { get; }
+    public Guid Id { get; init; }
 }

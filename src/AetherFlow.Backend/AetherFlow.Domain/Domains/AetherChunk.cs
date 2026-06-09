@@ -1,5 +1,6 @@
 ﻿namespace AetherFlow.Domain.Domains;
 
+[Serializable]
 public record AetherChunk(
     string Rune = "",
     string Designation = "",
@@ -12,7 +13,7 @@ public record AetherChunk(
     int? ChargePercent = null,
     AetherChargeState ChargeState = AetherChargeState.Unknown)
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
 
     public DateTime LastWhisperUtc { get; init; } = DateTime.UtcNow;
 }

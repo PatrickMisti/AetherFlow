@@ -2,7 +2,7 @@
 
 public class ManifestationStateAbsentNotification : INotification
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
     private ManifestationStateAbsentNotification() { }
 
     public static ManifestationStateAbsentNotification Instance => new();

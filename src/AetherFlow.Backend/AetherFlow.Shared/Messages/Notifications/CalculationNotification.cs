@@ -7,6 +7,6 @@ public record CalculationLatencyNotification(
     TimeSpan LatencyBtwCreateAndShipped,
     TimeSpan LatencyBtwShippedAndTransformed) : INotification
 {
-    public Guid Id { get; } = Guid.NewGuid();
-    public DateTime CreatedUtc { get; } = DateTime.UtcNow;
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public DateTime CreatedUtc { get; init; } = DateTime.UtcNow;
 }
