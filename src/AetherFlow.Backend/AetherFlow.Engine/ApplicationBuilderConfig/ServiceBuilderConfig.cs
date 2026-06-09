@@ -27,7 +27,8 @@ public static class ServiceBuilderConfig
                         messageExtractor: KindMessageExtractor.Create(),
                         entityPropsFactory: di => di.Props<AetherEngineActor>())
                     .WithDistributedPubSub(string.Empty)
-                    .AddPersistence(builder.Configuration));
+                    .AddPersistence(builder.Configuration)
+                    .AddNotifier());
         }
     }
 

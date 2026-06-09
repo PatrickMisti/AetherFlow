@@ -1,3 +1,4 @@
+using AetherFlow.Infrastructure.Actors;
 using AetherFlow.Infrastructure.AetherShardRegion;
 using AetherFlow.Shared.Config;
 using Akka.Actor;
@@ -53,6 +54,9 @@ public static class AkkaExtensions
 
     extension(AkkaConfigurationBuilder builder)
     {
+        public AkkaConfigurationBuilder AddNotifier() => builder.WithActors((system, registry, di) =>
+            registry.TryRegister<NotifyHandler>(system.ActorOf(di.Props<NotifyHandler>())));
+      
         /// <summary>
         /// Add Logging to Akka.NET using Serilog.
         /// This is a common choice for structured logging in .NET applications and integrates well with various logging sinks.

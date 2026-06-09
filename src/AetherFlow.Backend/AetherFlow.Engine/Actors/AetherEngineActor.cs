@@ -1,10 +1,12 @@
 ﻿using AetherFlow.Domain.Domains;
 using AetherFlow.Domain.EngineDomains;
+using AetherFlow.Infrastructure.Actors;
 using AetherFlow.Shared.Messages.Notifications;
 using AetherFlow.Shared.Messages.ShardRegion;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
+using Akka.Hosting;
 using Akka.Persistence;
 using Akka.Streams;
 using Akka.Streams.Dsl;
@@ -23,9 +25,12 @@ public class AetherEngineActor : ReceivePersistentActor
     private readonly Queue<AetherEngineValue> _items = new();
     private IReadOnlyCollection<AetherEngineValue> Items => _items.ToList().AsReadOnly();
 
-    public AetherEngineActor(SharedKillSwitch? killSwitch = null)
+    private readonly IActorRef _notifyHandler;
+
+    public AetherEngineActor(IRequiredActor<NotifyHandler> notifyHandler, SharedKillSwitch? killSwitch = null)
     {
         _killSwitch = killSwitch ?? KillSwitches.Shared("aether-engine-kill-switch");
+        _notifyHandler = notifyHandler.ActorRef;
         Command<SubscribeAck>(_ => Become(Initialize));
     }
 
@@ -86,14 +91,12 @@ public class AetherEngineActor : ReceivePersistentActor
         _log.Debug("Transform chunk to engine value");
         if (chunk.Presence == ManifestationState.Absent) 
         {
-            // todo send to handler
             _log.Debug("Chunk is absent, sending manifestation state absent notification");
-            // ManifestationStateAbsentNotification.Instance
+            _notifyHandler.Tell(ManifestationStateAbsentNotification.Instance);
         }
         
         _log.Debug("Chunk charging level is {chargeState}, sending charge state notification", chunk.ChargeState);
-        // todo send to handler
-        // ChargingLevelNotification
+        _notifyHandler.Tell(new ChargingLevelNotification(PersistenceId, chunk.ChargeState));
         
         return chunk.ToEngineValue();
     }

@@ -9,7 +9,7 @@ using Akka.Hosting;
 
 namespace AetherFlow.Ingestion.ApplicationBuilderConfig;
 
-internal static class ServiceBuildConfig
+internal static class ServiceBuilderConfig
 {
     extension<T>(T builder) where T : IHostApplicationBuilder
     {
@@ -36,7 +36,8 @@ internal static class ServiceBuildConfig
                     registry.Register<AetherPipelineActor>(pipActor);
 
                     genSupervisor.Tell(new StartGenerator());
-                });
+                })
+                .AddNotifier();
             });
 
             return builder;
