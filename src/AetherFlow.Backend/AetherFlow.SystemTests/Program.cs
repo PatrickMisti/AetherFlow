@@ -1,4 +1,3 @@
-using AetherFlow.Domain.Domains;
 using AetherFlow.SystemTests;
 using Akka.Actor;
 using Akka.Cluster;
@@ -6,11 +5,10 @@ using Akka.Discovery;
 
 Console.WriteLine("Hello, AetherFlow System Tests!");
 
-var actorSystem = ActorSystem.Create("AetherFlowSystemTests", HoconConfig.GetConfig());
-
-async Task discoveryTest(ActorSystem system)
+async Task discoveryTest() 
 {
-    var discovery = Discovery.Get(system);
+    var actorSystem = ActorSystem.Create("AetherFlowSystemTests", HoconConfig.GetConfig());
+    var discovery = Discovery.Get(actorSystem);
 
     var result = discovery.Default.Lookup(
         new Lookup(
@@ -35,4 +33,12 @@ async Task discoveryTest(ActorSystem system)
     cluster.RegisterOnMemberUp(() => { Console.WriteLine("Cluster member is up!"); });
 }
 
-// await actorSystem.WhenTerminated;
+var actorSystem = ActorSystem.Create("AetherFlowCluster", HoconConfig.GetShardConfig());
+
+// Warten bis Cluster bereit
+var cluster = Cluster.Get(actorSystem);
+await cluster.JoinAsync(new Address("akka.tcp", "AetherFlowCluster", "localhost", 8091));
+
+actorSystem.ActorOf(ShardMonitorActor.Props(), "shardMonitor");
+
+await actorSystem.WhenTerminated;

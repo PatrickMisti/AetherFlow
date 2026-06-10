@@ -5,11 +5,14 @@
     <ItemGroup>
       <PackageReference Include="Akka" />
       <PackageReference Include="Akka.Cluster" />
+      <PackageReference Include="Akka.Cluster.Sharding" />
       <PackageReference Include="Akka.Discovery" />
       <PackageReference Include="Akka.Remote" />
+      <PackageReference Include="Akka.Serialization.Hyperion" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\AetherFlow.Domain\AetherFlow.Domain.csproj" />
+      <ProjectReference Include="..\AetherFlow.Infrastructure\AetherFlow.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using AetherFlow.Domain.Domains;
 using AetherFlow.Domain.EngineDomains;
+using AetherFlow.Engine.Messages;
 using AetherFlow.Infrastructure.Actors;
 using AetherFlow.Shared.Messages.Notifications;
 using AetherFlow.Shared.Messages.ShardRegion;
@@ -15,7 +16,7 @@ namespace AetherFlow.Engine.Actors;
 
 public class AetherEngineActor : ReceivePersistentActor
 {
-    public override string PersistenceId { get; } = Context.Self.Path.Name;
+    public sealed override string PersistenceId { get; } = Context.Self.Path.Name;
     private readonly ILoggingAdapter _log = Context.GetLogger();
 
     private ISourceQueueWithComplete<ChunkShardMessage>? _sourceQueue;
@@ -29,14 +30,23 @@ public class AetherEngineActor : ReceivePersistentActor
 
     public AetherEngineActor(IRequiredActor<NotifyHandler> notifyHandler, SharedKillSwitch? killSwitch = null)
     {
-        _killSwitch = killSwitch ?? KillSwitches.Shared("aether-engine-kill-switch");
+        _killSwitch = killSwitch ?? KillSwitches.Shared($"aether-engine-kill-switch-{PersistenceId}");
         _notifyHandler = notifyHandler.ActorRef;
         RecoveryMessages();
-        Command<SubscribeAck>(_ => Become(Initialize));
+
+        Command<SaveEngineValueCommand>(_ => Stash.Stash());
+        Command<ChunkShardMessage>(_ => Stash.Stash());
+        Command<SubscribeAck>(_ =>
+        {
+            Stash.UnstashAll();
+            Become(Initialize);
+        });
     }
 
     private void Initialize()
     {
+        Command<SaveEngineValueCommand>(SaveEngineValue);
+
         Command<ChunkShardMessage>(msg =>
         {
             _log.Debug("Got command {entityId} with send msg time: {created} time now: {now}",
@@ -115,7 +125,7 @@ public class AetherEngineActor : ReceivePersistentActor
         return msg.Chunk;
     }
 
-    private void SaveEngineValue(AetherEngineValue engineValue) => Persist(engineValue, value =>
+    private void SaveEngineValue(SaveEngineValueCommand command) => Persist(command.EngineValue, value =>
     {
         if (_items.Count >= _capacity) _items.Dequeue();
         _items.Enqueue(value);
@@ -124,7 +134,6 @@ public class AetherEngineActor : ReceivePersistentActor
     protected override void PreStart()
     {
         base.PreStart();
-
         var mediator = DistributedPubSub.Get(Context.System).Mediator;
         mediator.Tell(new Subscribe("capacity", Self));
 
@@ -132,13 +141,14 @@ public class AetherEngineActor : ReceivePersistentActor
             .Via(_killSwitch.Flow<ChunkShardMessage>())
             .Via(Flow.Create<ChunkShardMessage>().Select(UnpackMsgAndNotifyHandler))
             .Via(Flow.Create<AetherChunk>().Select(TransformAndNotifyHandler))
-            .To(Sink.ForEach<AetherEngineValue>(SaveEngineValue))
+            .To(Sink.ForEach<AetherEngineValue>(value => Self.Tell(new SaveEngineValueCommand(value))))
             .Run(Context.System.Materializer());
     }
 
     protected override void PostStop()
     {
         _sourceQueue?.Complete();
+        _sourceQueue?.WatchCompletionAsync().Wait(TimeSpan.FromSeconds(5));
         _killSwitch.Shutdown();
         base.PostStop();
     }
