@@ -2,9 +2,8 @@ using AetherFlow.Domain.Domains;
 using AetherFlow.Ingestion.Actors;
 using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
+using AetherFlow.TestSupport;
 using Akka.Actor;
-using Akka.Hosting;
-using Akka.TestKit;
 using Akka.TestKit.NUnit;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -27,16 +26,7 @@ public class AetherWorkerTest : TestKit
         _mockRandom.Setup(r => r.NextDouble()).Returns(0.5);
         _mockRandom.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns(5);
 
-        var pipelineProbe = CreateTestProbe();
-        pipelineProbe.SetAutoPilot(new DelegateAutoPilot((sender, message) =>
-        {
-            if (message is PipelineStatusRequest)
-                sender.Tell(new PipelineStatusResponse(IsRunning: false));
-            return AutoPilot.KeepRunning;
-        }));
-
-        var mockRequiredActor = new Mock<IRequiredActor<AetherPipelineActor>>();
-        mockRequiredActor.Setup(r => r.ActorRef).Returns(pipelineProbe.Ref);
+        var pipelineProbe = this.CreatePipelineProbe(isRunning: false);
 
         var sp = new ServiceCollection()
             .AddScoped<IPeripheryConnector<AetherChunk>>(_ => _mockConnector.Object)
@@ -44,7 +34,7 @@ public class AetherWorkerTest : TestKit
 
         _workerActor = Sys.ActorOf(
             Props.Create(() => new AetherWorkerActor(
-                mockRequiredActor.Object,
+                RequiredActorMock.For<AetherPipelineActor>(pipelineProbe.Ref),
                 "test-worker-1",
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 _mockRandom.Object)));

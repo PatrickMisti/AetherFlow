@@ -9,8 +9,10 @@
     <Project Path="AetherFlow.Ingestion/AetherFlow.Ingestion.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <Project Path="AetherFlow.EngineTests/AetherFlow.EngineTests.csproj" />
     <Project Path="AetherFlow.IngestionTests/AetherFlow.IngestionTests.csproj" Id="1d042246-a3ff-40e2-97b9-b3fb9635e12d" />
     <Project Path="AetherFlow.SystemTests/AetherFlow.SystemTests.csproj" />
+    <Project Path="AetherFlow.TestSupport/AetherFlow.TestSupport.csproj" />
   </Folder>
   <Project Path="AetherFlow.Backend.AppHost/AetherFlow.Backend.AppHost.csproj" Id="3a53bb08-f0ac-4e4c-9ded-57468aaa7c2f" />
   <Project Path="AetherFlow.Backend.ServiceDefaults/AetherFlow.Backend.ServiceDefaults.csproj" />

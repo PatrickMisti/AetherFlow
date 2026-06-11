@@ -1,24 +1,23 @@
 ﻿using AetherFlow.Domain.Domains;
 using AetherFlow.Ingestion.Actors;
 using AetherFlow.Shared.Messages.Ingestion;
+using AetherFlow.TestSupport;
 using Akka.Actor;
 using Akka.Hosting;
 using Akka.TestKit.NUnit;
-using Moq;
 
 namespace AetherFlow.IngestionTests.GeneratorActorTests;
 
 [TestFixture]
 public class AetherSupervisorTest : TestKit
 {
-    private Mock<IRequiredActor<AetherPipelineActor>> _mockPipeline = null!;
+    private IRequiredActor<AetherPipelineActor> _pipeline = null!;
 
     [SetUp]
     public void SetUp()
     {
         var pipelineProbe = CreateTestProbe();
-        _mockPipeline = new Mock<IRequiredActor<AetherPipelineActor>>();
-        _mockPipeline.Setup(p => p.ActorRef).Returns(pipelineProbe.Ref);
+        _pipeline = RequiredActorMock.For<AetherPipelineActor>(pipelineProbe.Ref);
     }
 
     [Test]
@@ -26,7 +25,7 @@ public class AetherSupervisorTest : TestKit
     {
         // Arrange
         const int workerCount = 4;
-        var supervisorProps = Props.Create(() => new AetherSupervisorActor(_mockPipeline.Object, workers: workerCount));
+        var supervisorProps = Props.Create(() => new AetherSupervisorActor(_pipeline, workers: workerCount));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-spawn-test");
 
         // Assert: Actor created without exception
@@ -38,7 +37,7 @@ public class AetherSupervisorTest : TestKit
     {
         // Arrange
         var supervisorProps = Props.Create(() =>
-            new AetherSupervisorActor(_mockPipeline.Object, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
+            new AetherSupervisorActor(_pipeline, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-timer-test");
 
         // Act
@@ -56,7 +55,7 @@ public class AetherSupervisorTest : TestKit
         const int readingsPerChunk = 10;
 
         var supervisorProps = Props.Create(() =>
-            new AetherSupervisorActor(_mockPipeline.Object, workers: workerCount, readingsPerChunk: readingsPerChunk, ticksMs: 5000));
+            new AetherSupervisorActor(_pipeline, workers: workerCount, readingsPerChunk: readingsPerChunk, ticksMs: 5000));
 
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-dispatch-test");
 
@@ -81,7 +80,7 @@ public class AetherSupervisorTest : TestKit
         };
 
         var supervisorProps = Props.Create(() =>
-            new AetherSupervisorActor(_mockPipeline.Object, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
+            new AetherSupervisorActor(_pipeline, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-chunk-test");
 
         // Act: Send chunk completion
@@ -97,7 +96,7 @@ public class AetherSupervisorTest : TestKit
         // Arrange
         const int workerCount = 2;
         var supervisorProps = Props.Create(() =>
-            new AetherSupervisorActor(_mockPipeline.Object, workers: workerCount, readingsPerChunk: 5, ticksMs: 1000));
+            new AetherSupervisorActor(_pipeline, workers: workerCount, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-index-test");
 
         // Act: Multiple dispatches
@@ -141,7 +140,7 @@ public class AetherSupervisorTest : TestKit
         // Arrange
         var emptyChunks = new List<AetherChunk>();
         var supervisorProps = Props.Create(() => 
-            new AetherSupervisorActor(_mockPipeline.Object, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
+            new AetherSupervisorActor(_pipeline, workers: 2, readingsPerChunk: 5, ticksMs: 1000));
         var supervisor = Sys.ActorOf(supervisorProps, "supervisor-empty-test");
 
         // Act

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
@@ -23,11 +23,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="OpenTelemetry.Api" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AetherFlow.Ingestion\AetherFlow.Ingestion.csproj" />
+    <ProjectReference Include="..\AetherFlow.Engine\AetherFlow.Engine.csproj" />
     <ProjectReference Include="..\AetherFlow.Infrastructure\AetherFlow.Infrastructure.csproj" />
     <ProjectReference Include="..\AetherFlow.Shared\AetherFlow.Shared.csproj" />
     <ProjectReference Include="..\AetherFlow.TestSupport\AetherFlow.TestSupport.csproj" />
