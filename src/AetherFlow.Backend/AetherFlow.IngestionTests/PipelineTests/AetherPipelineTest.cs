@@ -321,8 +321,8 @@ public class AetherPipelineTest
         var offerTask = _pipeline.OfferAsync(chunks);
 
         // Wait until the first chunk is confirmed stuck inside ProcessNotification.
-        // At this point alertBlock's queue (cap=1) + BufferBlock (cap=1) are filling up,
-        // leaving chunks 4-10 as pending SendAsync tasks.
+        // At this point chunk 1 occupies alertBlock (cap=1) and chunk 2 the BufferBlock (cap=1),
+        // leaving chunks 3-10 as pending SendAsync tasks.
         await processEntered.WaitAsync(TimeSpan.FromSeconds(2));
 
         Assert.That(offerTask.IsCompleted, Is.False, "OfferAsync should be suspended while pipeline is full");

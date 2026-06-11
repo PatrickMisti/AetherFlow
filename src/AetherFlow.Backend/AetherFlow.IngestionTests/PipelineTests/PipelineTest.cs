@@ -35,10 +35,10 @@ public class PipelineTest
             // doubleIt.Post(r);
             await doubleIt.SendAsync(r);
         }
-        // to say the pipe it is fin
-        // nothing new
+        // signal that no more input will arrive
         doubleIt.Complete();
-        // now Iam really fin
-        await doubleIt.Completion;
+        // doubleIt finishing isn't the end of the pipeline — completion propagates to `output`,
+        // so await output.Completion to know everything was processed
+        await output.Completion;
     }
 }

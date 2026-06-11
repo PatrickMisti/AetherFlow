@@ -84,10 +84,10 @@ public static class AkkaExtensions
             });
 
         /// <summary>
-        /// Applies cluster roles, optional static seed nodes, minimum member gating, and split-brain behavior.
+        /// Applies cluster roles and optional static seed nodes from configuration.
         /// <para>
-        /// <c>MinimumNumberOfMembers</c> only delays the cluster state transition to <c>Up</c>; it does not stop local actor
-        /// execution before the cluster reaches <c>Up</c>.
+        /// <c>MinimumNumberOfMembers</c> from <see cref="AkkaSettings.ClusterSettings"/> is currently NOT applied
+        /// here — no minimum member gating takes place in this default path.
         /// </para>
         /// <para>
         /// <c>SplitBrainResolver</c> is set to <c>null</c> here, which disables automatic split-brain downing in this default path.
@@ -114,7 +114,8 @@ public static class AkkaExtensions
             });
 
         private AkkaConfigurationBuilder AddDiscovery(AkkaSettings settings)
-            // Useful when running in dynamic environments such as Kubernetes or Azure (enables dynamic discovery).
+            // Currently configured for local testing via hardcoded config-based discovery;
+            // swap to DNS/Kubernetes discovery for dynamic environments such as Kubernetes or Azure.
             => builder
                 .WithAkkaManagement(port: settings.Management.Port, hostName: settings.Remote.Host)
                 // If you need to bind a specific hostname/port (e.g. behind NAT or in Docker), set:
@@ -157,7 +158,9 @@ public static class AkkaExtensions
         /// <list type="bullet">
         /// <item><description>Event-sourced persistence state store mode for shard coordinator resilience</description></item>
         /// <item><description>Automatic entity passivation after 2 minutes of inactivity</description></item>
-        /// <item><description>Remember entities via event-sourced store so entity IDs survive rebalancing and shutdown</description></item>
+        /// <item><description>Remember-entities is disabled — entities are re-created lazily on the next
+        /// incoming message after rebalancing/passivation. <c>RememberEntitiesStore</c> is preset to
+        /// Eventsourced in case it gets enabled later.</description></item>
         /// <item><description>Role set from <see cref="AkkaSettings.ClusterSettings.ShardRegionRole"/></description></item>
         /// </list>
         /// </para>
@@ -183,10 +186,13 @@ public static class AkkaExtensions
                     Role = settings.Cluster.ShardRegionRole,
                     StateStoreMode = StateStoreMode.Persistence,
                     PassivateIdleEntityAfter = TimeSpan.FromMinutes(2),
-                    // so after shutdown or rebalancing actor info isn't lost
-                    // without after passivation entity id would be lost only grab id with new incoming msg
+                    // Disabled: entity IDs are dropped on passivation/rebalance and entities restart lazily
+                    // on the next incoming message. Enabling this would auto-restart entities after a
+                    // rebalance/shutdown, but it also turns off idle passivation (mutually exclusive).
                     RememberEntities = false,
-                    // ddata only remembers CRDT (Distributed Data) not state with eventsourced usage of journal
+                    // Eventsourced stores remembered entity IDs durably in the persistence journal; ddata keeps
+                    // them in Distributed Data (lost on full cluster restart unless durable storage is configured).
+                    // Neither stores actor state. Only relevant if RememberEntities is enabled.
                     RememberEntitiesStore = RememberEntitiesStore.Eventsourced, // todo test if needed
                     ShouldPassivateIdleEntities = true
                 });

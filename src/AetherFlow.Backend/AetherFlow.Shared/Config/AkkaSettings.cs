@@ -68,6 +68,7 @@ public class AkkaSettings
         /// <summary>
         /// Minimum number of members required before the cluster transitions to <c>Up</c>.
         /// This setting does not prevent local actors from starting before the cluster is <c>Up</c>.
+        /// Currently not wired up — <c>AddClustering</c> does not pass this to the cluster options.
         /// </summary>
         public int MinimumNumberOfMembers { get; set; } = 1;
 
@@ -87,13 +88,15 @@ public class AkkaSettings
         /// <summary>
         /// Cluster role required to host shards for this region.
         /// Must match one of the roles in <see cref="Roles"/> on every node intended to host shards.
-        /// When <c>null</c>, defaults to <see cref="ShardRegionName"/> at registration time.
+        /// Defaults to <c>aether-engine</c>. If a null role were passed at registration, the shard
+        /// region would be hosted on every cluster node.
         /// </summary>
         public string ShardRegionRole { get; set; } = "aether-engine";
 
         /// <summary>
         /// Split-brain resolver strategy used when a network partition occurs.
-        /// Defaults to keep-majority.
+        /// Defaults to keep-majority. Currently not wired up — <c>AddClustering</c> disables SBR;
+        /// configure it via HOCON or apply this setting in <c>AddClustering</c> before relying on it.
         /// </summary>
         public SplitBrainResolverSettings SplitBrainResolver { get; set; } = new();
 
