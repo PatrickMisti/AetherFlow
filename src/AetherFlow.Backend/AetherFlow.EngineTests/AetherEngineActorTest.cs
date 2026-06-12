@@ -1,5 +1,7 @@
 using AetherFlow.Domain.Domains;
+using AetherFlow.Domain.EngineDomains;
 using AetherFlow.Engine.Actors;
+using AetherFlow.Engine.Messages;
 using AetherFlow.Infrastructure.Actors;
 using AetherFlow.Shared.Messages.Notifications;
 using AetherFlow.Shared.Messages.ShardRegion;
@@ -95,5 +97,43 @@ public class AetherEngineActorTest : TestKit
 
         for (var i = 0; i < 3; i++)
             _notifier.FishForMessage<CalculationLatencyNotification>(_ => true, TimeSpan.FromSeconds(10));
+    }
+    
+    [Test]
+    public async Task CapacityCheck_AddItemsToQueue()
+    {
+        var engine = CreateEngine("engine-check");
+        int capacity = 5;
+        
+        // Wait until the actor has finished its subscribe/initialization phase. Before that
+        // messages like SaveEngineValueCommand are being stashed and Ask/Monitoring requests
+        // won't be handled.
+        AwaitCondition(() =>
+        {
+            try
+            {
+                // small timeout: if actor hasn't initialized yet this will throw/timeout quickly
+                engine.Ask<MonitoringAetherChunkMessageResponse>(
+                    MonitoringAetherChunkMessageRequest.Instance(),
+                    TimeSpan.FromMilliseconds(200)).GetAwaiter().GetResult();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }, TimeSpan.FromSeconds(5));
+
+        // Now the actor should be initialized and will process incoming SaveEngineValueCommand messages.
+        engine.Tell(new ChunkCapacityChangeNotification(capacity, TestActor));
+        for (int i = 0; i < 10; i++)
+            engine.Tell(new SaveEngineValueCommand(AetherChunkFactory.Valid(AetherChargeState.Full).ToEngineValue()));
+
+        // Ask for the monitoring response (allow some time for processing)
+        var msg = await engine.Ask<MonitoringAetherChunkMessageResponse>(
+            MonitoringAetherChunkMessageRequest.Instance(),
+            TimeSpan.FromSeconds(5));
+        
+        Assert.AreEqual(capacity, msg.Values.Count);
     }
 }

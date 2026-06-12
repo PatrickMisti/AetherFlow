@@ -16,11 +16,8 @@ public class NotifyHandler : ReceiveActor
         // Todo add grpc 
         // Todo maybe need external service to communicate if input or output not work
         //
-        // Todo add tests 
-        // Todo update ingestion tests
-        //
+        // Todo tests check
         // Todo SystemTests maybe move to monitoring tool
-        // 
-        // Review: focus -> tests <-> notifications -> monitoring tool -> f# app 
+        // Review: focus -> notifications -> monitoring tool -> f# app 
     }
 }

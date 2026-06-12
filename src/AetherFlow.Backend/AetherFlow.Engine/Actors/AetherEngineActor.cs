@@ -1,4 +1,5 @@
-﻿using AetherFlow.Domain.Domains;
+﻿using System.Collections.Immutable;
+using AetherFlow.Domain.Domains;
 using AetherFlow.Domain.EngineDomains;
 using AetherFlow.Engine.Messages;
 using AetherFlow.Infrastructure.Actors;
@@ -64,6 +65,20 @@ public class AetherEngineActor : ReceivePersistentActor
 
             SaveSnapshot(msg);
         });
+        
+        Command<MonitoringAetherChunkMessageRequest>(_ =>
+        {
+            _log.Debug("Received monitoring request, sending response with {itemCount} items", Items.Count);
+            var monitoring = new MonitoringAetherChunkMessageResponse(
+                EntityId: PersistenceId,
+                Values: Items.ToImmutableList(),
+                Sender: Self);
+
+            if (!Sender.IsNobody())
+                Sender.Tell(monitoring);
+            else
+                _notifyHandler.Tell(monitoring);
+        });
     }
 
     private void RecoveryMessages()
@@ -93,7 +108,6 @@ public class AetherEngineActor : ReceivePersistentActor
             }
         });
     }
-
 
     private AetherEngineValue TransformAndNotifyHandler(AetherChunk chunk)
     {
