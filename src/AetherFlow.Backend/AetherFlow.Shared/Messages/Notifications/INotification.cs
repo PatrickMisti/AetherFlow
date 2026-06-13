@@ -3,4 +3,5 @@
 public interface INotification
 {
     public Guid Id { get; init; }
+    public DateTime CreatedUtc { get; init; }
 }
