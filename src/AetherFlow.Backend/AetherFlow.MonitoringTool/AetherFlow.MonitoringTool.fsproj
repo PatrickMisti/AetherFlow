@@ -2,7 +2,8 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>disable</Nullable>                <!-- Disable nullable reference types for this project -->
+        <ImplicitUsings>disable</ImplicitUsings>    <!-- Disable implicit usings for this project -->
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,11 +14,14 @@
     <ItemGroup/>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.12"/>
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.12"/>
-        <PackageReference Include="JaggerJo.Avalonia.FuncUI" Version="0.5.0"/>
-        <PackageReference Include="JaggerJo.Avalonia.FuncUI.DSL" Version="0.5.0"/>
-        <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" Version="0.5.0"/>
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Diagnostics" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Avalonia.FuncUI" />
+        <PackageReference Include="Avalonia.FuncUI.Elmish" />
+<!--        <PackageReference Include="JaggerJo.Avalonia.FuncUI" />-->
+<!--        <PackageReference Include="JaggerJo.Avalonia.FuncUI.DSL" />-->
+<!--        <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" />-->
     </ItemGroup>
 
     <ItemGroup>
