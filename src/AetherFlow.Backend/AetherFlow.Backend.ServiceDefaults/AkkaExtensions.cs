@@ -11,6 +11,7 @@ using Akka.Logger.Serilog;
 using Akka.Management;
 using Akka.Management.Cluster.Bootstrap;
 using Akka.Remote.Hosting;
+using Akka.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -36,7 +37,8 @@ public static class AkkaExtensions
                 var configured = config
                     .AddLogging()
                     .AddRemote(settings.Remote.Host, settings.Remote.Port)
-                    .AddClustering(settings.Cluster);
+                    .AddClustering(settings.Cluster)
+                    .AddNotifier(settings);
                 // .AddDiscovery(settings) // enable cluster discovery (DNS / Kubernetes) in dynamic environments
                 // .WithAkkaManagement()   // configure Akka Management when using discovery/bootstrap
 
@@ -54,9 +56,16 @@ public static class AkkaExtensions
 
     extension(AkkaConfigurationBuilder builder)
     {
-        public AkkaConfigurationBuilder AddNotifier() => builder.WithActors((system, registry, di) =>
-            registry.TryRegister<NotifyHandler>(system.ActorOf(di.Props<NotifyHandler>())));
-      
+        public AkkaConfigurationBuilder AddNotifier(AkkaSettings config) => builder.WithActors((system, registry, di) =>
+            registry.TryRegister<NotifyHandler>(system.ActorOf(
+                di.Props<NotifyHandler>()
+                    .WithRouter(
+                        new RoundRobinPool(
+                            nrOfInstances: 5, 
+                            resizer: new DefaultResizer(lower: config.Resizer.Low, upper: config.Resizer.High))
+                        ), "notify-handler-pool")
+            ));
+
         /// <summary>
         /// Add Logging to Akka.NET using Serilog.
         /// This is a common choice for structured logging in .NET applications and integrates well with various logging sinks.

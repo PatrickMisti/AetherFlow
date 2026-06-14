@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Akka" />
     <PackageReference Include="Akka.Cluster.Hosting" />
     <PackageReference Include="Akka.Discovery" />
     <PackageReference Include="Akka.Hosting" />

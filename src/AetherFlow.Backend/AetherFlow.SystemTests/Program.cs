@@ -1,11 +1,16 @@
+using AetherFlow.Domain.Domains;
+using AetherFlow.Infrastructure.Actors;
+using AetherFlow.Shared.Messages.Notifications;
 using AetherFlow.SystemTests;
 using Akka.Actor;
 using Akka.Cluster;
+using Akka.Configuration;
 using Akka.Discovery;
+using Akka.Routing;
 
 Console.WriteLine("Hello, AetherFlow System Tests!");
 
-async Task discoveryTest() 
+async Task DiscoveryTest()
 {
     var actorSystem = ActorSystem.Create("AetherFlowSystemTests", HoconConfig.GetConfig());
     var discovery = Discovery.Get(actorSystem);
@@ -31,14 +36,53 @@ async Task discoveryTest()
     await cluster.JoinAsync(cluster.SelfAddress);
 
     cluster.RegisterOnMemberUp(() => { Console.WriteLine("Cluster member is up!"); });
+    await actorSystem.WhenTerminated;
 }
 
-var actorSystem = ActorSystem.Create("AetherFlowCluster", HoconConfig.GetShardConfig());
+async Task ClusterTesting()
+{
+    var actorSystem = ActorSystem.Create("AetherFlowCluster", HoconConfig.GetShardConfig());
+    var cluster = Cluster.Get(actorSystem);
+    // Warten bis Cluster bereit
+    await cluster.JoinAsync(new Address("akka.tcp", "AetherFlowCluster", "localhost", 8091));
+    actorSystem.ActorOf(ShardMonitorActor.Props(), "shardMonitor");
+    await actorSystem.WhenTerminated;
+}
 
-// Warten bis Cluster bereit
-var cluster = Cluster.Get(actorSystem);
-await cluster.JoinAsync(new Address("akka.tcp", "AetherFlowCluster", "localhost", 8091));
+async Task NotificationHandlerTesting()
+{
+    var actorSystem = ActorSystem.Create("AetherFlowActor", ConfigurationFactory.Default());
+    var notify = actorSystem.ActorOf(Props.Create(() => new NotifyHandler()), "notifyHandler");
+    foreach (var i in Enumerable.Range(1, 200))
+    {
+        notify.Tell(new ChargingLevelNotification($"Entity{i}", AetherChargeState.Full));
+    }
+    await actorSystem.WhenTerminated;
+}
 
-actorSystem.ActorOf(ShardMonitorActor.Props(), "shardMonitor");
+async Task NotificationHandlerTesting1()
+{
+    var actorSystem = ActorSystem.Create("AetherFlowActor", ConfigurationFactory.Default());
 
-await actorSystem.WhenTerminated;
+    var resizer = new DefaultResizer(lower: 2, upper: 16, messagesPerResize: 1, rampupRate: .5);
+    var notify = actorSystem.ActorOf(
+        Props.Create(() => new NotifyHandler())
+            .WithRouter(new RoundRobinPool(2, resizer)),
+        "notifyHandler");
+
+    foreach (var i in Enumerable.Range(1, 200))
+    {
+        
+        notify.Tell(new ChargingLevelNotification($"Entity{i}", AetherChargeState.Full));
+        await Task.Delay(100); // needed without not work router think it's ok with burst 
+    }
+    
+    for (int k = 0; k < 50; k++)
+    {
+        var r = await notify.Ask<Routees>(GetRoutees.Instance, TimeSpan.FromSeconds(1));
+        Console.WriteLine($"t={k * 200}ms  routees={r.Members.Count()}");
+        await Task.Delay(200);
+    } 
+    await actorSystem.Terminate();
+}
+await NotificationHandlerTesting1();

@@ -23,6 +23,8 @@ public class AkkaSettings
     /// </summary>
     public ManagementSettings Management { get; set; } = new();
 
+    public RouterResizer Resizer { get; set; } = new();
+
     /// <summary>
     /// Configures Akka.Remote transport settings.
     /// Needed so this node can accept remote actor traffic on a known host and port.
@@ -135,5 +137,11 @@ public class AkkaSettings
         /// HTTP port exposed by Akka.Management for bootstrap and operational endpoints.
         /// </summary>
         public int Port { get; set; } = 8888;
+    }
+
+    public class RouterResizer
+    {
+        public int Low { get; set; } = 2;
+        public int High { get; set; } = 15;
     }
 }

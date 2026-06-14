@@ -36,8 +36,7 @@ internal static class ServiceBuilderConfig
                     registry.Register<AetherPipelineActor>(pipActor);
 
                     genSupervisor.Tell(new StartGenerator());
-                })
-                .AddNotifier();
+                });
             });
 
             return builder;
