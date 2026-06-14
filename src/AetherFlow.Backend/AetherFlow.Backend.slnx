@@ -7,6 +7,7 @@
   <Folder Name="/src/">
     <Project Path="AetherFlow.Engine/AetherFlow.Engine.csproj" />
     <Project Path="AetherFlow.Ingestion/AetherFlow.Ingestion.csproj" />
+    <Project Path="AetherFlow.MonitoringTool/AetherFlow.MonitoringTool.fsproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="AetherFlow.EngineTests/AetherFlow.EngineTests.csproj" />
