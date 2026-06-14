@@ -5,8 +5,10 @@ open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.FuncUI.Elmish
 open Avalonia.Themes.Fluent
 open Avalonia.FuncUI.Hosts
+
 type MainWindow() as this =
     inherit HostWindow()
+
     do
         base.Title <- "AetherFlow Monitoring"
         base.Width <- 400.0
@@ -19,20 +21,14 @@ type MainWindow() as this =
 type App() =
     inherit Application()
 
-    override this.Initialize() =
-        this.Styles.Add(FluentTheme())
+    override this.Initialize() = this.Styles.Add(FluentTheme())
 
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
-        | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            desktop.MainWindow <- MainWindow()
+        | :? IClassicDesktopStyleApplicationLifetime as desktop -> desktop.MainWindow <- MainWindow()
         | _ -> ()
 
 module Program =
     [<EntryPoint>]
     let main (args: string[]) =
-        AppBuilder
-            .Configure<App>()
-            .UsePlatformDetect()
-            .UseSkia()
-            .StartWithClassicDesktopLifetime(args)
+        AppBuilder.Configure<App>().UsePlatformDetect().UseSkia().StartWithClassicDesktopLifetime(args)
