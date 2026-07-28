@@ -6,6 +6,7 @@ using AetherFlow.Shared.AetherInterfaces;
 using AetherFlow.Shared.Messages.Ingestion;
 using Akka.Actor;
 using Akka.Hosting;
+using Akka.Net.Collector.Agent;
 
 namespace AetherFlow.Ingestion.ApplicationBuilderConfig;
 
@@ -18,6 +19,7 @@ internal static class ServiceBuilderConfig
             builder.AddAkkaDefaults((config, settings) =>
             {
                 config.AddShardRegionProxy<IAetherShardProxyMarker>(settings: settings);
+                config.AddMonitoringAgent();
                 // system -> actor-system
                 // registry -> out of system // DI container for actors // only for node not for cluster
                 // di -> into the system

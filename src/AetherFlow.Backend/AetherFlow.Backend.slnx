@@ -4,6 +4,10 @@
     <Project Path="AetherFlow.Infrastructure/AetherFlow.Infrastructure.csproj" Id="e4d92cab-bb49-413f-a227-153da970dbeb" />
     <Project Path="AetherFlow.Shared/AetherFlow.Shared.csproj" Id="d7120e9c-e44b-4dbb-ae19-54b57c58405d" />
   </Folder>
+  <Folder Name="/nuget/">
+    <Project Path="Akka.Net.Collector/Akka.Net.Collector.csproj" />
+    <Project Path="Akka.Net.MonitoringApi/Akka.Net.MonitoringApi.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="AetherFlow.Engine/AetherFlow.Engine.csproj" />
     <Project Path="AetherFlow.Ingestion/AetherFlow.Ingestion.csproj" />

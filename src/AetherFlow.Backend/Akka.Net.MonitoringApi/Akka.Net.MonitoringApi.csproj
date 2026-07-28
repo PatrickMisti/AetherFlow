@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akka.Hosting" />
+    <PackageReference Include="Akka.Remote.Hosting" />
+    <PackageReference Include="Akka.Cluster.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Akka.Net.Collector\Akka.Net.Collector.csproj" />
+    <ProjectReference Include="..\AetherFlow.Shared\AetherFlow.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

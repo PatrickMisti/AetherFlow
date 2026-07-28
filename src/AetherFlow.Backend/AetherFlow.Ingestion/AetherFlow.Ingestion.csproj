@@ -6,6 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Akka.Net.Collector\Akka.Net.Collector.csproj" />
     <ProjectReference Include="..\AetherFlow.Backend.ServiceDefaults\AetherFlow.Backend.ServiceDefaults.csproj" />
     <ProjectReference Include="..\AetherFlow.Infrastructure\AetherFlow.Infrastructure.csproj" />
     <ProjectReference Include="..\AetherFlow.Shared\AetherFlow.Shared.csproj" />
